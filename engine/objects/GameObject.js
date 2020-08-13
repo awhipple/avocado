@@ -139,6 +139,13 @@ export default class GameObject {
     return this._radius;
   }
 
+  set radius(val) {
+    this.rect.x = this.x - val;
+    this.rect.y = this.y - val;
+    this.rect.w = val * 2;
+    this.rect.h = val * 2;
+  }
+
   get originX() {
     return this._rect.x;
   }

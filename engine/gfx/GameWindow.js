@@ -1,9 +1,11 @@
 import Text from "./Text.js";
+import Particle from "./shapes/Particle.js";
 
 export default class GameWindow {
   fpsUpdateNext = (new Date()).getTime() + 1000;
   frames = 0;
   fps = 0;
+  // showFps = true;
 
   constructor(engine, canvasId, gameObjects, options = {}) {
     this.engine = engine;
@@ -71,6 +73,8 @@ export default class GameWindow {
         this.objects[i].draw?.(this.ctx, this.engine);
       }
     }
+    Particle.drawQueuedParticles(this.ctx);
+    this.drawLoop?.(this.ctx);
     if ( this.showFps ) {
       this.fpsText.draw(this.ctx);
     }

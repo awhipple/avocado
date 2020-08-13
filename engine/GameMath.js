@@ -124,6 +124,10 @@ export class BoundingRect {
     );
   }
 
+  grow(size) {
+    return new BoundingRect(this.x - size, this.y - size, this.w + size*2, this.h + size*2);
+  }
+
   draw(ctx, color = "white", bgColor, alpha = 1) {
     ctx.save();
     ctx.globalAlpha = alpha;

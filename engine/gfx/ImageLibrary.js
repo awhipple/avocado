@@ -27,7 +27,7 @@ export default class ImageLibrary {
   }
 
   save(img, name) {
-    this.images[name] = new Image(img);
+    this.images[name] = img instanceof Image ? img : new Image(img);
   }
 
   _loadImage(name) {

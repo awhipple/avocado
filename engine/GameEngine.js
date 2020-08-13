@@ -41,10 +41,12 @@ export default class GameEngine {
     });
 
     this.onMouseDown(event => {
-      if ( !this.firstInteraction ) {
-        this.firstInteraction = true;
-        this.trigger("firstInteraction")
-      }
+      setTimeout(() => {
+        if ( !this.firstInteraction ) {
+          this.firstInteraction = true;
+          this.trigger("firstInteraction")
+        }
+      }, 50);
       this.mouse[MouseButtonNames[event.button] || event.button] = true;
 
       this._sendMouseEvent(event, "onMouseClick");
@@ -86,7 +88,7 @@ export default class GameEngine {
 
   register(object, name) {
     if ( Array.isArray(object) ) {
-      object.forEach(obj => this.register(obj));
+      object.forEach(obj => this.register(obj, name));
       return;
     }
 
@@ -98,6 +100,10 @@ export default class GameEngine {
 
     if ( object.on === undefined ) {
       object.on = true;
+    }
+
+    if ( !object.engine ) {
+      object.engine = this;
     }
 
     if ( this.gameObjects.all.indexOf(object) === -1 ) {
@@ -147,10 +153,16 @@ export default class GameEngine {
     this.gameLoop = gameLoop;
   }
 
+  draw(drawLoop) {
+    this.window.drawLoop = drawLoop;
+  }
+
   startGameLoop() {
     this.nextTick = (new Date).getTime() - 100 * 1000;
 
-    setInterval(() => {
+    var engineLoop = () => {
+      requestAnimationFrame(engineLoop);
+
       this.loops = 0;
       while (new Date().getTime() > this.nextTick && this.loops < 10) {
         this.update();
@@ -158,7 +170,9 @@ export default class GameEngine {
         this.loops++;
       }
       this.nextTick = Math.max(this.nextTick, new Date().getTime());
-    }, 1000/60);
+    };
+
+    requestAnimationFrame(engineLoop);
   }
 
   update() {
@@ -178,9 +192,8 @@ export default class GameEngine {
     }
 
     // Developer provided game loop
-    if ( this.gameLoop ) {
-      this.gameLoop();
-    }
+    this.gameLoop?.();
+    
 
     // Game Object rectangle collision callbacks
     this.gameObjects.all.forEach(obj => {
@@ -270,7 +283,7 @@ export default class GameEngine {
     var canvas = this.window.canvas;
     var rect = canvas.getBoundingClientRect();
     
-    var { clientX, clientY }  = this.mobile ? (event.touches?.[0] ?? event.changedTouches?.[0]) : event;
+    var { clientX, clientY } = event.touches?.[0] ?? event.changedTouches?.[0] ?? event;
 
     return new Coord(
       (clientX - rect.x) * canvas.width / rect.width,

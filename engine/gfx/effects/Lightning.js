@@ -1,4 +1,5 @@
 import GameObject from "../../objects/GameObject.js";
+import Particle from "../shapes/Particle.js";
 import { Coord, getDirectionFrom } from "../../GameMath.js";
 
 export default class Lightning extends GameObject {
@@ -29,6 +30,8 @@ export default class Lightning extends GameObject {
     this.innerCol = options.innerCol ?? "yellow";
     this.outerCol = options.outerCol ?? "orange";
 
+    this.spawnParticles = options.spawnParticles ?? true;
+
     var segLength = 10;
     this.segments = [];
     if ( this.circRad ) {
@@ -37,7 +40,6 @@ export default class Lightning extends GameObject {
       var stepLength = (Math.PI * 2) / numSteps;
       for ( var step = 0; step < numSteps; step++ ) {
         var rad = step * stepLength;
-        console.log(rad);
         this.segments.push({
           x: this.x1 + Math.cos(rad) * this.circRad,
           y: this.y1 + Math.sin(rad) * this.circRad,
@@ -80,6 +82,29 @@ export default class Lightning extends GameObject {
           y: seg.y + seg.py * vary,
         });
       });
+      if ( this.spawnParticles ) {
+        this.spawnParticles = false;
+        this.points.forEach(point => {
+          if ( Math.random() < 0.5) {
+            this.engine.register(new Particle(
+              this.engine,
+              {
+                start: {
+                  ...point,
+                  ...(this.innerCol === "yellow" ? {r: 255, g: 255} : {g:128, b:255}),
+                  radius: Math.random()*7+3,
+                },
+                end: {
+                  x: point.x + Math.random()*150-75,
+                  y: point.y + Math.random()*150-75,
+                  radius: 0,
+                },
+                lifeSpan: Math.random()*0.5,
+              }
+            ));
+          }
+        });
+      }
       if ( this.circRad ) {
         // This joins the circle. Pushing the first two keeps it from having a gap.
         this.points.push(this.points[0]);

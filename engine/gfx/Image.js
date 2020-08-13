@@ -13,9 +13,15 @@ export default class Image {
     this.orientation = orientation;
     this.flip = flip;
     this.orientationMap = orientationMap || { right: { normal: this } };
+    this.lastDrawn = new Date().getTime();
+  }
+
+  drawnWithin(sec) {
+    return (new Date().getTime()) - this.lastDrawn < sec*1000;
   }
   
   draw(ctx, a, b, c, d, e) {
+    this.lastDrawn = new Date().getTime();
     var x = null, y = null,
         w = null, h = null,
         coord = null, 
@@ -110,6 +116,21 @@ export default class Image {
     var flippedImage = new Image(this._mirrorImage(), this.orientation, flipTo, this.orientationMap);
     this.orientationMap[this.orientation][flipTo] = flippedImage;
     return flippedImage;
+  }
+
+  cut(width) {
+    var i = 0;
+    for ( var x = 0; x < this.width; x += width) {
+      var newCan = document.createElement("canvas");
+      newCan = document.createElement("canvas");
+      newCan.width = width;
+      newCan.height = this.height;
+      var newCtx = newCan.getContext("2d");
+      newCtx.drawImage(this.img, x, 0, width, this.height, 0, 0, width, this.height);
+      this[i] = new Image(newCan);
+      i++;
+    }
+    this.length = i;
   }
 
   _rotateImage() {
