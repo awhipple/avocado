@@ -37,7 +37,7 @@ export default class Particle extends GameObject {
 
   }
 
-  update(ctx) {
+  update() {
     this.time += 1/60;
     if ( this.engine && this.time > this.lifeSpan ) {
       this.engine.unregister(this);
@@ -148,7 +148,7 @@ export default class Particle extends GameObject {
       Particle.ty += 50;
       if ( Particle.ty >= 1000 ) {
         Particle.ty = 0;
-        Particle.sheet = 0;
+        Particle.tSheet++;
       }
     }
 

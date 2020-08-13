@@ -23,7 +23,6 @@ export default class GameEngine {
     this.mobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 
     this.window = new GameWindow(this, options.canvasID ?? "gameCanvas", this.gameObjects.all, options);
-    this.images.preload("fullscreen");
 
     this.dev = window.location.href.indexOf("localhost") !== -1;
 
