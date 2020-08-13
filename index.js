@@ -67,16 +67,17 @@ var effects = [
       var parts = [];
       for ( var i = 0; i < 4; i++ ) {
         var rad = Math.random() * Math.PI * 2;
+        var [r, g, b] = Math.random() < 0.05 ? [Math.random()*256, Math.random()*256, Math.random()*256] : [255, 255, 255];
         if ( rad % (Math.PI/2) < 0.7) {
           parts.push(new Particle(null, {
             start: {
               x: 500, y: 500,
-              r: 255, g: 255, b: 255,
+              r, g, b,
               radius: 3,
               alpha: 0.1,
             },
             end: {
-              x: 500 + Math.cos(rad + galRotate) * 300, y: 500 + Math.sin(rad + galRotate) * 300,
+              x: 500 + Math.cos(rad + galRotate) * 300, y: 500 + Math.sin(rad + galRotate) * 150,
               radius: Math.random()*5+5,
               alpha: 1,
             },
@@ -85,6 +86,24 @@ var effects = [
           galRotate += 0.004;
         }
       }
+      if ( Math.random() < 0.08 ) {
+        parts.push(new Particle(null, {
+          start: {
+            x: 500, y: 500,
+            r: 255, g: 255, b: 255,
+            radius: 90,
+            alpha: 0.4,
+          },
+          end: {
+            x: 300 + Math.random() * 400, y: 490 + Math.random() * 20,
+            r: 200, g: 200, b: 100,
+            radius: Math.random()*5+5,
+            alpha: 0,
+          },
+          lifeSpan: 16,
+        }));
+      }
+
       return parts;
     }
   },
