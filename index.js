@@ -66,7 +66,7 @@ var effects = [
       var parts = [];
       for ( var i = 0; i < 3; i++ ) {
         var x = Math.random()*200 + 400;
-        if ( Math.random() < 0.03) {
+        if ( Math.random() < 0.06) {
           parts.push(new Particle(null, {
             start: {
               x: 500, y: 700,
@@ -82,7 +82,7 @@ var effects = [
             lifeSpan: 4,
           }));
         }
-        if ( Math.random() < 0.1 ) {
+        if ( Math.random() < 0.3 ) {
           parts.push(new Particle(null, {
             start: {
               x, y: 700,
