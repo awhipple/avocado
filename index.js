@@ -59,7 +59,35 @@ export default class Game {
 
 }
 
+var galRotate = 0;
 var effects = [
+  {
+    name: "galaxy",
+    particles: () => {
+      var parts = [];
+      for ( var i = 0; i < 4; i++ ) {
+        var rad = Math.random() * Math.PI * 2;
+        if ( rad % (Math.PI/2) < 0.7) {
+          parts.push(new Particle(null, {
+            start: {
+              x: 500, y: 500,
+              r: 255, g: 255, b: 255,
+              radius: 3,
+              alpha: 0.1,
+            },
+            end: {
+              x: 500 + Math.cos(rad + galRotate) * 300, y: 500 + Math.sin(rad + galRotate) * 300,
+              radius: Math.random()*5+5,
+              alpha: 1,
+            },
+            lifeSpan: 20,
+          }));
+          galRotate += 0.004;
+        }
+      }
+      return parts;
+    }
+  },
   {
     name: "flames",
     particles: () => {
@@ -67,6 +95,7 @@ var effects = [
       for ( var i = 0; i < 3; i++ ) {
         var x = Math.random()*200 + 400;
         if ( Math.random() < 0.06) {
+          // Smoke
           parts.push(new Particle(null, {
             start: {
               x: 500, y: 700,
@@ -83,6 +112,7 @@ var effects = [
           }));
         }
         if ( Math.random() < 0.3 ) {
+          // Sparks
           parts.push(new Particle(null, {
             start: {
               x, y: 700,
@@ -97,11 +127,22 @@ var effects = [
             lifeSpan: 1,
           }));
         }
+        // Fire
+        var radius = Math.random()*20+20;
         parts.push(new Particle(null, {
           start: {
-            x, y: 700,
+            x, y: 720-radius,
             r: 255, g: Math.random() * 160,
-            radius: Math.random()*20+20,
+            radius,
+            alpha: 0.2,
+          },
+          lifeSpan: 2,
+        }));
+        parts.push(new Particle(null, {
+          start: {
+            x, y: 720-radius,
+            r: 255, g: Math.random() * 160,
+            radius,
             alpha: 1,
           },
           end: {
