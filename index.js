@@ -70,18 +70,25 @@ var effects = [
         var [r, g, b] = Math.random() < 0.05 ? [Math.random()*256, Math.random()*256, Math.random()*256] : [255, 255, 255];
         if ( rad % (Math.PI/2) < 0.7) {
           parts.push(new Particle(null, {
-            start: {
-              x: 500, y: 500,
-              r, g, b,
-              radius: 3,
-              alpha: 0.1,
-            },
-            end: {
-              x: 500 + Math.cos(rad + galRotate) * 300, y: 500 + Math.sin(rad + galRotate) * 150,
-              radius: Math.random()*5+5,
-              alpha: 1,
-            },
-            lifeSpan: 20,
+            transitions: [
+              {
+                x: 500, y: 500,
+                r, g, b,
+                radius: 3,
+                alpha: 0.1,
+                duration: 20,
+              },
+              {
+                radius: Math.random()*5+5,
+                alpha: 1,
+                duration: 1,
+              },
+              {
+                x: 500 + Math.cos(rad + galRotate) * (300 + Math.random() * 16), y: 500 + Math.sin(rad + galRotate) * (150 + Math.random()*8),
+                radius: 1,
+                alpha: 0,
+              },
+            ]
           }));
           galRotate += 0.004;
         }
@@ -137,7 +144,6 @@ var effects = [
               x, y: 700,
               r: 255, g: Math.random() * 160,
               radius: 3,
-              alpha: 1,
             },
             end: {
               x: x + Math.random() * 160 - 80, y: Math.random()*200 + 300,
@@ -162,7 +168,6 @@ var effects = [
             x, y: 720-radius,
             r: 255, g: Math.random() * 160,
             radius,
-            alpha: 1,
           },
           end: {
             x: (x-500)*0.5+500, y: Math.random()*200 + 400,
@@ -185,7 +190,6 @@ var effects = [
             x, y,
             r: Math.random()*256, g: Math.random()*256, b: Math.random()*256,
             radius: 3,
-            alpha: 1,
           },
           end: {
             x: Math.random()*200 + 400, y: Math.random()*200 + 400,
@@ -207,7 +211,6 @@ var effects = [
           x: 500, y: 500,
           g: Math.random()*256, b: 255,
           radius: 2,
-          alpha: 1,
         },
         end: {
           x: 500 + Math.cos(rad) * 150, y: 500 + Math.sin(rad) * 150,

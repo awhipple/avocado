@@ -5,44 +5,64 @@ export default class Particle extends GameObject {
   static drawQueue = [];
   static particleColorMap = {};
   static partSheets = [];
+  static propertyDefaults = {
+    x: 50, y: 50,
+    r: 0, g: 0, b: 0,
+    radius: 50, alpha: 1,
+  };
   
   z = 1000;
 
   constructor(engine, options = {start:{}}) {
     super(engine, {x: 50, y: 50, radius: 50});
 
-    this.part = generateParticle();
-    this.ctx = this.part.img.getContext("2d");
-    this.ctx.globalCompositeOperation = "source-atop";
-
-    this.time = 0;
-    this.lifeSpan = options.lifeSpan ?? 1;
-
+    this.transitions = options.transitions;
+    if ( !this.transitions ) {
+      this.transitions = [];
+      options.start.duration = options.lifeSpan ?? 1;
+      this.transitions.push(options.start);
+      if ( options.end ) {
+        this.transitions.push(options.end);
+      }
+    }
+    this._hydrateTransitions();
+    
     this.optimizeColorTransitions = options.optimizeColorTransitions ?? true;
     if ( this.optimizeColorTransitions ) {
       ['r', 'g', 'b'].forEach(col => {
-        this._normalizeColor(options, col);
+        this._normalizeColor(col);
       });
     }
+    
+    this._setState(this.transitions[0]);
 
-    this.initial = options.start;
-    this._setState(this.initial);
-
-    this.stateDelta = {};
-    for(var key in options.start) {
-      if ( typeof options.start[key] === "number" && typeof options.end?.[key] === "number" ) {
-        this.stateDelta[key] = options.end[key] - options.start[key];
+    this.transitionDeltas = [];
+    for ( var i = 0; i < this.transitions.length - 1; i++ ) {
+      this.transitionDeltas.push({});
+      for ( var key in this.transitions[i] ) {
+        if ( typeof this.transitions[i][key] === "number" && typeof this.transitions[i+1][key] === "number" ) {
+          this.transitionDeltas[i][key] = this.transitions[i+1][key] - this.transitions[i][key];
+        }
       }
     }
 
+    this.currentTran = 0;
+    this.lifeSpan = this.transitions[this.transitions.length-1].time;
+
+    this.timer = 0;
   }
 
   update() {
-    this.time += 1/60;
-    if ( this.engine && this.time > this.lifeSpan ) {
+    this.timer += 1/60;
+
+    while (this.transitions[this.currentTran + 1] && this.timer > this.transitions[this.currentTran + 1].time) {
+      this.currentTran++;
+    }
+    if ( this.engine && this.timer > this.lifeSpan ) {
       this.engine.unregister(this);
     }
-    this._setState(this._generateDeltaState(this.time / this.lifeSpan));
+    var tran = this.transitions[this.currentTran];
+    this._setState(this._generateDeltaState(((this.timer - tran.time) / tran.duration)));
   }
 
   draw(ctx) {
@@ -88,18 +108,58 @@ export default class Particle extends GameObject {
 
   _generateDeltaState(delta) {
     var newDeltaState = {};
-    for ( var key in this.stateDelta ) {
-      newDeltaState[key] = this.initial[key] + this.stateDelta[key] * delta;
+    var tran = this.transitions[this.currentTran], tranDelt = this.transitionDeltas[this.currentTran];
+    for ( var key in tranDelt ) {
+      newDeltaState[key] = tran[key] + tranDelt[key] * delta;
     }
     return newDeltaState;
   }
 
-  _normalizeColor(options, color) {
-    [options.start, options.end].forEach(state => {
-      if ( state?.hasOwnProperty(color) ) {
-        state[color] = Math.round(state[color]/16)*16;
+  _normalizeColor(color) {
+    this.transitions.forEach(transition => {
+      if ( transition?.hasOwnProperty(color) ) {
+        transition[color] = Math.round(transition[color]/16)*16;
       }
     });
+  }
+
+  _hydrateTransitions() {
+    var time = 0;
+    var prevTran;
+    this.transitions.forEach(tran => {
+      tran.duration = tran.duration ?? 1;
+      
+      tran.time = time;
+      time += tran.duration;
+    });
+    this.transitions.forEach((tran, i) => {
+      for ( var key in Particle.propertyDefaults ) {
+        if ( tran === this.transitions[0] ) {
+          tran[key] = tran[key] ?? Particle.propertyDefaults[key];
+        } else {
+          if ( tran[key] === null || tran[key] === undefined ) {
+            var {nextVal, nextTime} = this._getNextTransVarOccurence(i, key);
+            if ( nextVal !== null ) {
+              tran[key] = prevTran[key] + (((nextVal-prevTran[key]) * prevTran.duration) / (nextTime - prevTran.time));
+            } else {
+              tran[key] = prevTran[key];
+            }
+          }
+        }
+      }
+      
+      prevTran = tran;
+    });
+  }
+
+  _getNextTransVarOccurence(i, key) {
+    while ( i < this.transitions.length && (this.transitions[i][key] === undefined)) {
+      i++;
+    }
+    if ( i === this.transitions.length ) {
+      return {nextVal: null, nextTime: null};
+    }
+    return {nextVal: this.transitions[i][key], nextTime: this.transitions[i].time};
   }
 
   static _queueForDraw(particle) {
