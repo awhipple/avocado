@@ -63,7 +63,7 @@ var galRotate = 0;
 var bezierCount = 0;
 var effects = [
   {
-    name: "Bezier",
+    name: "bezier",
     particles: () => {
 
       bezierCount++;
@@ -94,19 +94,7 @@ var effects = [
               x: 0, y: 1000,
               bx: 1000, by: 500,
               g: 0,
-            }
-            // {
-            //   x: 0, y: 1000,
-            //   r: 255,
-            //   size: 0,
-            // },
-            // {r: 0, g: 255},
-            // {
-            //   x: Math.random()*400 + 600,
-            //   g: 0, b: 255,
-            //   size: 100, alpha: 0,
-            //   bx: Math.random()*1000, by: Math.random()*1000-500,
-            // }
+            },
           ]
         });
       }
