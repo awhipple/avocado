@@ -25,6 +25,9 @@ export default class Particle extends GameObject {
         this.transitions.push(options.end);
       }
     }
+    if ( this.transitions.length === 1 ) {
+      this.transitions.push({});
+    }
     this._hydrateTransitions();
     
     this.optimizeColorTransitions = options.optimizeColorTransitions ?? true;
@@ -112,6 +115,19 @@ export default class Particle extends GameObject {
     for ( var key in tranDelt ) {
       newDeltaState[key] = tran[key] + tranDelt[key] * delta;
     }
+    if ( tran.bezierBeginPointer !== undefined ) {
+      var firstTran = this.transitions[tran.bezierBeginPointer];
+      var secondTran = this.transitions[tran.bezierEndPointer];
+      var bTime = this.timer - firstTran.time;
+      var bRatio = bTime / (secondTran.time - firstTran.time);
+      
+      var nx1 = firstTran.x + bRatio * (secondTran.bx - firstTran.x);
+      var ny1 = firstTran.y + bRatio * (secondTran.by - firstTran.y);
+      var nx2 = secondTran.bx + bRatio * (secondTran.x - secondTran.bx);
+      var ny2 = secondTran.by + bRatio * (secondTran.y - secondTran.by);
+      newDeltaState.x = nx1 + bRatio * (nx2 - nx1);
+      newDeltaState.y = ny1 + bRatio * (ny2 - ny1);
+    }
     return newDeltaState;
   }
 
@@ -126,7 +142,25 @@ export default class Particle extends GameObject {
   _hydrateTransitions() {
     var time = 0;
     var prevTran;
-    this.transitions.forEach(tran => {
+    this.transitions.forEach((tran, i) => {
+      if ( 
+        i > 0 &&
+        (tran.x !== undefined || tran.y !== undefined) &&
+        tran.bx !== undefined && tran.by !== undefined 
+      ) {
+        var current = i - 1;
+        while ( 
+          current > 0 && 
+          (this.transitions[current].x === undefined && this.transitions[current].y === undefined )
+        ) {
+          current--;
+        }
+        for ( var k = current; k <= i; k++ ) {
+          this.transitions[k].bezierBeginPointer = current;
+          this.transitions[k].bezierEndPointer = i;
+        }
+      }
+
       tran.duration = tran.duration ?? 1;
       
       tran.time = time;

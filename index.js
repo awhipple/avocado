@@ -60,7 +60,60 @@ export default class Game {
 }
 
 var galRotate = 0;
+var bezierCount = 0;
 var effects = [
+  {
+    name: "test",
+    particles: () => {
+
+      bezierCount++;
+      if ( bezierCount === 3 ) {
+        bezierCount = 0;
+        return new Particle(null, {
+          transitions: [
+            {
+              x: 0, y: 1000,
+              r: 255,
+            },
+            {
+              x: 1000, y: 1000,
+              bx: 500, by: 0,
+              r: 0, g: 255,
+            },
+            {
+              x: 1000, y: 0,
+              bx: 0, by: 500,
+              g: 0, b: 255,
+            },
+            {
+              x: 0, y: 0,
+              bx: 500, by: 1000,
+              r: 255, g: 255, b: 0,
+            },
+            {
+              x: 0, y: 1000,
+              bx: 1000, by: 500,
+              g: 0,
+            }
+            // {
+            //   x: 0, y: 1000,
+            //   r: 255,
+            //   size: 0,
+            // },
+            // {r: 0, g: 255},
+            // {
+            //   x: Math.random()*400 + 600,
+            //   g: 0, b: 255,
+            //   size: 100, alpha: 0,
+            //   bx: Math.random()*1000, by: Math.random()*1000-500,
+            // }
+          ]
+        });
+      }
+      return [];
+    }
+
+  },
   {
     name: "galaxy",
     particles: () => {
