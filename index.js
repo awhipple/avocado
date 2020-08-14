@@ -63,6 +63,42 @@ var galRotate = 0;
 var bezierCount = 0;
 var effects = [
   {
+    name: "geyser",
+    particles: () => {
+      var partList = [];
+      for ( var i = 0; i < 5; i++ ) {
+        partList.push(new Particle(null, {
+          transitions: [
+            {
+              x: 490 + Math.random()*20, y: 1050,
+              radius: 25,
+              r: 170, g: 255, b: 255,
+            },
+            {
+              x: Math.random()*1000, y: 1050,
+              radius: 30,
+              r: 0, g: 0,
+              bx: 500, by: Math.random()*200-300,
+              duration: 0,
+            },
+            {
+              r: 255, g: 255, b: 255,
+              alpha: 0.05,
+              radius: 70,
+              duration: 5,
+            },
+            {
+              y: 0,
+              radius: 0,
+              alpha: 0,
+            },
+          ]
+        }));
+      }
+      return partList;
+    }
+  },
+  {
     name: "bezier",
     particles: () => {
 
