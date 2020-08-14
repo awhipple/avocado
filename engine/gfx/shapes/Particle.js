@@ -65,9 +65,6 @@ export default class Particle extends GameObject {
       this.engine.unregister(this);
     }
     var tran = this.transitions[this.currentTran];
-    if ( this.currentTran === 1 ) {
-      this._generateDeltaState(((this.timer - tran.time) / tran.duration), true);
-    }
     this._setState(this._generateDeltaState(((this.timer - tran.time) / tran.duration)));
   }
 
@@ -112,7 +109,7 @@ export default class Particle extends GameObject {
     }
   }
 
-  _generateDeltaState(delta, debug = false) {
+  _generateDeltaState(delta) {
     var newDeltaState = {};
     var tran = this.transitions[this.currentTran];
     var tranDelt = this.transitionDeltas[this.currentTran];
