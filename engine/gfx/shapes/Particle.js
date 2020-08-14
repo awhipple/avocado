@@ -65,6 +65,9 @@ export default class Particle extends GameObject {
       this.engine.unregister(this);
     }
     var tran = this.transitions[this.currentTran];
+    if ( this.currentTran === 1 ) {
+      this._generateDeltaState(((this.timer - tran.time) / tran.duration), true);
+    }
     this._setState(this._generateDeltaState(((this.timer - tran.time) / tran.duration)));
   }
 
@@ -109,15 +112,17 @@ export default class Particle extends GameObject {
     }
   }
 
-  _generateDeltaState(delta) {
+  _generateDeltaState(delta, debug = false) {
     var newDeltaState = {};
-    var tran = this.transitions[this.currentTran], tranDelt = this.transitionDeltas[this.currentTran];
+    var tran = this.transitions[this.currentTran];
+    var tranDelt = this.transitionDeltas[this.currentTran];
+    var nextTran = this.transitions[this.currentTran+1];
     for ( var key in tranDelt ) {
       newDeltaState[key] = tran[key] + tranDelt[key] * delta;
     }
-    if ( tran.bezierBeginPointer !== undefined ) {
-      var firstTran = this.transitions[tran.bezierBeginPointer];
-      var secondTran = this.transitions[tran.bezierEndPointer];
+    if ( nextTran?.bezierBeginPointer !== undefined ) {
+      var firstTran = this.transitions[nextTran.bezierBeginPointer];
+      var secondTran = this.transitions[nextTran.bezierEndPointer];
       var bTime = this.timer - firstTran.time;
       var bRatio = bTime / (secondTran.time - firstTran.time);
       
