@@ -125,7 +125,6 @@ export default class Text {
   }
 
   _generateLines(ctx) {
-    ctx.save();
     ctx.font = this.style;
 
     if ( !this.maxWidth ) {
@@ -147,7 +146,5 @@ export default class Text {
         numWords = 0;
       }
     }
-
-    ctx.restore();
   }
 }
