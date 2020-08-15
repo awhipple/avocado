@@ -83,9 +83,9 @@ var effects = [
             },
             {
               r: 255, g: 255, b: 255,
+              radius: 80,
               alpha: 0.05,
-              radius: 70,
-              duration: 5,
+              duration: 2,
             },
             {
               y: 0,

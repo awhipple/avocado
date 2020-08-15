@@ -157,7 +157,7 @@ export default class Particle extends GameObject {
         ) {
           current--;
         }
-        for ( var k = current; k <= i; k++ ) {
+        for ( var k = current; k < i; k++ ) {
           this.transitions[k].bezierBeginPointer = current;
           this.transitions[k].bezierEndPointer = i;
         }
