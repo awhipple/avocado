@@ -47,7 +47,7 @@ export default class Game {
     this.avo.load().then(() => {
       this.avo.onUpdate(() => {
         var effect = effects[this.currentEffect];
-        this.avo.register(effect.particles(), "particle");
+        this.avo.register(effect.particles());
       });
     });
   }
@@ -136,7 +136,6 @@ var effects = [
       }
       return [];
     }
-
   },
   {
     name: "galaxy",
@@ -165,7 +164,7 @@ var effects = [
                 radius: 1,
                 alpha: 0,
               },
-            ]
+            ],
           }));
           galRotate += 0.004;
         }

@@ -66,6 +66,9 @@ export default class GameWindow {
     } else {
       this.ctx.clearRect(0, 0, this.width, this.height);
     }
+    
+    Particle.prepParticlesForDraw(this.engine.getObjects("particle"));
+    
     this.objects.sort((a, b) => (a.z || 0) - (b.z || 0))
     for(var i = 0; i < this.objects.length; i++) {
       if ( !this.objects[i].hide ) {
@@ -73,7 +76,6 @@ export default class GameWindow {
         this.objects[i].draw?.(this.ctx, this.engine);
       }
     }
-    Particle.drawQueuedParticles(this.ctx);
     this.drawLoop?.(this.ctx);
     if ( this.showFps ) {
       this.fpsText.draw(this.ctx);

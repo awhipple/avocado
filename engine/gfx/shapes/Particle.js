@@ -52,6 +52,7 @@ export default class Particle extends GameObject {
     this.currentTran = 0;
     this.lifeSpan = this.transitions[this.transitions.length-1].time;
 
+    this.z = options.z ?? this.z;
     this.timer = 0;
   }
 
@@ -70,7 +71,11 @@ export default class Particle extends GameObject {
   }
 
   draw(ctx) {
-    Particle._queueForDraw(this);
+    var { x: px, y: py, w: pw, h: ph } = this.rect;
+    var old = ctx.globalAlpha;
+    ctx.globalAlpha = this.alpha;
+    ctx.drawImage(Particle.partSheets[this.drawTarget.sheet].can, this.drawTarget.x, this.drawTarget.y, 50, 50, px, py, pw, ph);
+    ctx.globalAlpha = old;
   }
 
   get r() {
@@ -198,6 +203,18 @@ export default class Particle extends GameObject {
     return {nextVal: this.transitions[i][key], nextTime: this.transitions[i].time};
   }
 
+  static prepParticlesForDraw(particles) {
+    this._resetParticleSheet();
+    particles.forEach(part => this._queueForDraw(part));
+    this._drawParticleSheets();
+  }
+
+  static _resetParticleSheet() {
+    this.drawQueue = [];
+    this.particleColorMap = {};
+    Particle.tSheet = undefined;
+  }
+
   static _queueForDraw(particle) {
     Particle.drawQueue.push(particle);
     if ( Particle.particleColorMap[particle.col] === undefined) {
@@ -206,7 +223,7 @@ export default class Particle extends GameObject {
     particle.drawTarget = Particle.particleColorMap[particle.col];
   }
 
-  static drawQueuedParticles(ctx) {
+  static _drawParticleSheets() {
     Particle.drawQueue.forEach(particle => {
       var draw = particle.drawTarget;
       if ( !Particle.particleColorMap[particle.col].drawn ) {
@@ -221,14 +238,6 @@ export default class Particle extends GameObject {
       }
     });
     // console.log("Drawing " + Object.keys(Particle.particleColorMap).length + "/" + Particle.drawQueue.length + " particles on " + Particle.partSheets.length + " sheets.");
-    this.drawQueue.forEach(particle => {
-      var { x: px, y: py, w: pw, h: ph } = particle.rect;
-      ctx.globalAlpha = particle.alpha;
-      ctx.drawImage(Particle.partSheets[particle.drawTarget.sheet].can, particle.drawTarget.x, particle.drawTarget.y, 50, 50, px, py, pw, ph);
-    });
-    this.drawQueue = [];
-    this.particleColorMap = {};
-    Particle._resetParticleSheet();
   }
 
   static _getNextSheetParticle() {
@@ -249,10 +258,6 @@ export default class Particle extends GameObject {
     }
 
     return { sheet: Particle.tSheet, x: Particle.tx, y: Particle.ty, drawn: false };
-  }
-
-  static _resetParticleSheet() {
-    Particle.tSheet = undefined;
   }
 }
 
