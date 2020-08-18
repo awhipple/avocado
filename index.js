@@ -65,27 +65,27 @@ var galRotate = 0;
 var bezierCount = 0;
 var effects = [
   {
-    name: "test",
+    name: "twinkle",
     particles: () => {
       var partList = [];
-      if ( once ) {
-        once = false;
+      for ( var i = 0; i < 10; i ++ ) {
         partList.push(new Particle(null, {
           transitions: [
             {
-              x: 50, y: 950,
-              radius: 50,
+              x: Math.random()*1000, y: Math.random()*1000,
+              radius: 0,
               r: 255, g: 255, b: 255,
-            },
-            {
-              y: [50, "easeIn"],
-              r: 255, g: 255, b: 255,
-              alpha: 1,
-            },
-            {
-              x: [950, "easeBoth"], y: [950, "easeOut"],
-              r: 0, b: 0,
               alpha: 0,
+              duration: 0.3,
+            },
+            {
+              radius: 3,
+              alpha: [1, "easeIn"],
+              duration: 0.3,
+            },
+            {
+              radius: 0,
+              alpha: [0, "easeOut"],
             },
           ]
         }));
