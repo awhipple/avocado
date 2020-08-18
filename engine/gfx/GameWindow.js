@@ -27,7 +27,7 @@ export default class GameWindow {
     if ( this.engine.mobile ) {
       document.body.style = "overscroll-behavior: none; touch-action: manipulation";
     }
-    this.canvas.style = engine.mobile ? 
+    this.canvas.style = engine.mobile && engine.mobileStretch ? 
       "width: 100%; height: 100%;" :
       this.ratioStyle + "padding-left: 0;margin-left: auto;margin-right: auto;display: block;";
       

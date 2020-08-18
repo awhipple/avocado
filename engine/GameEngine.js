@@ -22,6 +22,7 @@ export default class GameEngine {
 
   constructor(options = {}) {
     this.mobile = (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+    this.mobileStretch = options.mobileStretch ?? true;
 
     this.window = new GameWindow(this, options.canvasID ?? "gameCanvas", this.gameObjects.all, options);
 

@@ -2,7 +2,7 @@ import Avocado from "./engine/GameEngine.js";
 import Particle from "./engine/gfx/shapes/Particle.js";
 
 window.onload = function() {
-  (new Game()).start();
+  (new Game({mobileStretch: false})).start();
 };
 
 export default class Game {
