@@ -10,6 +10,14 @@ export default class Particle extends GameObject {
     r: 0, g: 0, b: 0,
     radius: 50, alpha: 1,
   };
+  static transitionFunctions = {
+    easeIn: d => Math.sin(d * Math.PI/2),
+    easeOut: d => 1 - Math.sin((1-d) * Math.PI/2),
+    easeBoth: d => {
+      var dist = Math.pow((0.5-Math.abs(0.5-d))/0.5, 2)*0.5
+      return d < 0.5 ? dist : 1 - dist;
+    },
+  }
   
   z = 1000;
 
@@ -28,6 +36,7 @@ export default class Particle extends GameObject {
     if ( this.transitions.length === 1 ) {
       this.transitions.push({});
     }
+    this.deltaTransitions = this._generateDeltaTransitions();
     this._hydrateTransitions();
     
     this.optimizeColorTransitions = options.optimizeColorTransitions ?? true;
@@ -115,26 +124,87 @@ export default class Particle extends GameObject {
     }
   }
 
+  _generateDeltaTransitions() {
+    var timeStamp = 0;
+    var deltaTransitions = [];
+    this.transitions.forEach(tran => {
+      tran.time = timeStamp;
+      tran.duration = tran.duration ?? 1;
+      if ( tran.duration === 0 ) {
+        tran.duration = 1/59;
+      }
+      timeStamp += tran.duration;
+    });
+
+    var propLastSeen = {};
+    this.transitions.forEach((tran, i) => {
+      if ( i < this.transitions.length - 1 ) {
+        var newDt = {};
+        for ( var key in Particle.propertyDefaults ) {
+          if ( i === 0 ) {
+            this.transitions[0][key] = this.transitions[0][key] ?? Particle.propertyDefaults[key];
+            propLastSeen[key] = 0;
+          }
+
+          if ( tran[key] !== undefined ) {
+            propLastSeen[key] = i;
+          }
+
+          var propNextSeen = null;
+          for ( var k = i + 1; k < this.transitions.length; k++ ) {
+            if ( this.transitions[k][key] !== undefined ) {
+              propNextSeen = k;
+              break;
+            }
+          }
+
+          // [ initial, deltaTransition, deltaStart, deltaEnd, tranFunc, bezier ]
+          var lastTran = this.transitions[propLastSeen[key]];
+          var nextTran = propNextSeen && this.transitions[propNextSeen];
+          if ( nextTran ) {
+            var lastVal = lastTran[key]?.[0] ?? lastTran[key];
+            var [nextVal, dFunc] = Array.isArray(nextTran[key]) ? nextTran[key] : [ nextTran[key], d => d];
+            if ( typeof dFunc === "string" ) {
+              dFunc = Particle.transitionFunctions[dFunc] ?? (d => d);
+            }
+            var deltaChange = nextVal - lastVal;
+            var totDur = nextTran.time - lastTran.time;
+            if ( deltaChange !== 0 || nextTran.bx !== undefined || nextTran.by !== undefined) {
+              newDt[key] = [
+                lastVal, deltaChange,
+                (tran.time - lastTran.time) / totDur,
+                (this.transitions[i+1].time - lastTran.time) / totDur,
+                dFunc,
+              ];
+              if ( ['x', 'y'].includes(key) && nextTran["b" + key] !== undefined) {
+                var bez = nextTran["b" + key];
+                newDt[key].push(bez);
+              }
+            }
+          }
+        }
+        deltaTransitions.push(newDt);
+      }
+      return deltaTransitions;
+    });
+    return deltaTransitions;
+  }
+
   _generateDeltaState(delta) {
     var newDeltaState = {};
-    var tran = this.transitions[this.currentTran];
-    var tranDelt = this.transitionDeltas[this.currentTran];
-    for ( var key in tranDelt ) {
-      newDeltaState[key] = tran[key] + tranDelt[key] * delta;
+    var tran = this.deltaTransitions[this.currentTran];
+    for ( var key in tran ) {
+      var t = tran[key];
+      var frameDelta = t[4](delta * (t[3] - t[2]) + t[2]);
+      newDeltaState[key] = t[0] + t[1] * frameDelta;
+
+      if ( t[5] !== undefined ) {
+        var ys1 = t[0] + frameDelta * (t[5] - t[0]);
+        var ys2 = t[5] + frameDelta * (t[0] + t[1] - t[5]);
+        newDeltaState[key] = ys1 + frameDelta * (ys2 - ys1);
+      }
     }
-    if ( tran.bezierBeginPointer !== undefined ) {
-      var firstTran = this.transitions[tran.bezierBeginPointer];
-      var secondTran = this.transitions[tran.bezierEndPointer];
-      var bTime = this.timer - firstTran.time;
-      var bRatio = bTime / (secondTran.time - firstTran.time);
-      
-      var nx1 = firstTran.x + bRatio * (secondTran.bx - firstTran.x);
-      var ny1 = firstTran.y + bRatio * (secondTran.by - firstTran.y);
-      var nx2 = secondTran.bx + bRatio * (secondTran.x - secondTran.bx);
-      var ny2 = secondTran.by + bRatio * (secondTran.y - secondTran.by);
-      newDeltaState.x = nx1 + bRatio * (nx2 - nx1);
-      newDeltaState.y = ny1 + bRatio * (ny2 - ny1);
-    }
+
     return newDeltaState;
   }
 

@@ -305,6 +305,13 @@ export default class GameEngine {
     this.dev = false;
   }
 
+  once(callback) {
+    if ( !this.onceCompleted ) {
+      callback();
+      this.onceCompleted = true;
+    }
+  }
+
   // Used for console logs to prevent them from spamming
   oncePerSecond(callback, key = "onceOnly") {
     this.eventTimers[key] = this.eventTimers[key] ?? 0;

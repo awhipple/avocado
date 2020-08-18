@@ -54,14 +54,45 @@ export default class Game {
 
   setEffect(val) {
     this.avo.unregister("particle");
+    this.avo.onceCompleted = false;
     this.currentEffect = val;
   }
 
 }
 
+var once = true;
 var galRotate = 0;
 var bezierCount = 0;
 var effects = [
+  {
+    name: "test",
+    particles: () => {
+      var partList = [];
+      if ( once ) {
+        once = false;
+        partList.push(new Particle(null, {
+          transitions: [
+            {
+              x: 50, y: 950,
+              radius: 50,
+              r: 255, g: 255, b: 255,
+            },
+            {
+              y: [50, "easeIn"],
+              r: 255, g: 255, b: 255,
+              alpha: 1,
+            },
+            {
+              x: [950, "easeBoth"], y: [950, "easeOut"],
+              r: 0, b: 0,
+              alpha: 0,
+            },
+          ]
+        }));
+      }
+      return partList;
+    }
+  },
   {
     name: "geyser",
     particles: () => {
