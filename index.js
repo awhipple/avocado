@@ -69,8 +69,7 @@ var effects = [
     particles: () => {
       var partList = [];
       for ( var i = 0; i < 10; i ++ ) {
-        partList.push(new Particle(null, {
-          transitions: [
+        partList.push(new Particle([
             {
               x: Math.random()*1000, y: Math.random()*1000,
               radius: 0,
@@ -88,7 +87,7 @@ var effects = [
               alpha: [0, "easeOut"],
             },
           ]
-        }));
+        ));
       }
       return partList;
     }
@@ -98,7 +97,7 @@ var effects = [
     particles: () => {
       var partList = [];
       for ( var i = 0; i < 5; i++ ) {
-        partList.push(new Particle(null, {
+        partList.push(new Particle({
           transitions: [
             {
               x: 490 + Math.random()*20, y: 1050,
@@ -136,7 +135,7 @@ var effects = [
       bezierCount++;
       if ( bezierCount === 3 ) {
         bezierCount = 0;
-        return new Particle(null, {
+        return new Particle({
           transitions: [
             {
               x: 0, y: 1000,
@@ -176,7 +175,7 @@ var effects = [
         var rad = Math.random() * Math.PI * 2;
         var [r, g, b] = Math.random() < 0.05 ? [Math.random()*256, Math.random()*256, Math.random()*256] : [255, 255, 255];
         if ( rad % (Math.PI/2) < 0.7) {
-          parts.push(new Particle(null, {
+          parts.push(new Particle({
             transitions: [
               {
                 x: 500, y: 500,
@@ -201,7 +200,7 @@ var effects = [
         }
       }
       if ( Math.random() < 0.08 ) {
-        parts.push(new Particle(null, {
+        parts.push(new Particle({
           start: {
             x: 500, y: 500,
             r: 255, g: 255, b: 255,
@@ -229,7 +228,7 @@ var effects = [
         var x = Math.random()*200 + 400;
         if ( Math.random() < 0.06) {
           // Smoke
-          parts.push(new Particle(null, {
+          parts.push(new Particle({
             start: {
               x: 500, y: 700,
               r: 255, g: 255, b: 255,
@@ -246,7 +245,7 @@ var effects = [
         }
         if ( Math.random() < 0.3 ) {
           // Sparks
-          parts.push(new Particle(null, {
+          parts.push(new Particle({
             start: {
               x, y: 700,
               r: 255, g: Math.random() * 160,
@@ -261,7 +260,7 @@ var effects = [
         }
         // Fire
         var radius = Math.random()*20+20;
-        parts.push(new Particle(null, {
+        parts.push(new Particle({
           start: {
             x, y: 720-radius,
             r: 255, g: Math.random() * 160,
@@ -270,7 +269,7 @@ var effects = [
           },
           lifeSpan: 2,
         }));
-        parts.push(new Particle(null, {
+        parts.push(new Particle({
           start: {
             x, y: 720-radius,
             r: 255, g: Math.random() * 160,
@@ -292,7 +291,7 @@ var effects = [
       var parts = [];
       for ( var i = 0; i < 15; i++ ) {
         var x = Math.random()*200 + 400, y = Math.random()*200 + 400;
-        parts.push(new Particle(null, {
+        parts.push(new Particle({
           start: {
             x, y,
             r: Math.random()*256, g: Math.random()*256, b: Math.random()*256,
@@ -304,6 +303,7 @@ var effects = [
             alpha: 0,
           },
           lifeSpan: 1,
+          optimizeColors: 64,
         }));
       }
       return parts;
@@ -313,7 +313,7 @@ var effects = [
     name: "whirlpool",
     particles: () => {
       var rad = Math.random() * Math.PI * 2;
-      return new Particle(null, {
+      return new Particle({
         start: {
           x: 500, y: 500,
           g: Math.random()*256, b: 255,
@@ -332,7 +332,7 @@ var effects = [
     name: "space",
     particles: () => {
       var rad = Math.random() * Math.PI * 2;
-      return new Particle(null, {
+      return new Particle({
         start: {
           x: 500 + Math.cos(rad) * 5, y: 500 + Math.sin(rad) * 5,
           r: 255, g: 255, b: 255,
