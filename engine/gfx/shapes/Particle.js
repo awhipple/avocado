@@ -247,7 +247,7 @@ export default class Particle extends GameObject {
         Particle.particleColorMap[particle.col].drawn = true;
       }
     });
-    console.log("Drawing " + Object.keys(Particle.particleColorMap).length + "/" + Particle.drawQueue.length + " particles on " + Particle.partSheets.length + " sheets.");
+    // console.log("Drawing " + Object.keys(Particle.particleColorMap).length + "/" + Particle.drawQueue.length + " particles on " + Particle.partSheets.length + " sheets.");
   }
 
   static _getNextSheetParticle() {
