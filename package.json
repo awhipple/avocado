@@ -1,6 +1,6 @@
 {
   "name": "avocado2d",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An html javascript game engine for creating 2d games.",
   "main": "index.js",
   "scripts": {
