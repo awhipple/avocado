@@ -1,10 +1,135 @@
 # Avocado
 
-Avocado is a 2d javascript canvas based game engine, written entirely by Aaron Whipple. It's designed to be simple to use, unobtrusive, and to give you as much control over your game loop as possible.
+Avocado is a 2d javascript canvas based game engine, written entirely by Aaron Whipple. It supports Chrome on Windows, Mac, and Android. It's designed to be simple to use, unobtrusive, and to give you as much control over your game loop as possible.
 
 On the command line execute the following in your project directory.
 
-`npm install avocado2d`
+```
+npm install avocado2d
+cp ./node_modules/avocado2d/template/* .
+```
+
+Note: The 2nd command is not necessary, but will provide you with some starter files to get up and running. Use these as an example to work Avocado into a pre existing project.
+
+Instantiate an instance of the game engine. This is already done if you use the template files from above.
+
+```javascript
+var avo = new Avocado( {
+  width: 1000,
+  height: 1000,
+  bgColor: "#000",
+} );
+```
+
+Instantiate a game object with your init code.
+
+````javascript
+var circle = new Circle({x: 500, y: 500}, 30);
+avo.register(circle);
+````
+
+At this point you should have a black game screen in the middle of the page with a blue circle in the middle.
+
+Add the following to your init code.
+
+```javascript
+avo.onUpdate(() => {
+  circle.x++;
+});
+```
+
+You should now see the circle moving slowly toward the right side of the screen.
+
+## Game Objects
+
+In the example above, the circle we created is a game object. Avocado contains a number of useful ready to use game objects, but the bulk of a game will likely be made up of developer defined game objects.
+
+To register a game object, use `avo.register(object)`. From this point on, the game engine will manage the object for you, and no action needs to be taken from your game loop.
+
+You can also optionally provide a name for the object type, which can later be used to fetch sub collections of objects.
+
+```javascript
+avo.register(object, "enemy"); // Tags our new game object with the label "enemy".
+avo.getObjects("enemy"); // Returns an array containing all game objects with the tag "enemy".
+avo.unregister(object); // Removes the object from the game.
+```
+
+###### Initialization
+
+When a game object is registered, a few things happen.
+
+* The object has its `on` property set to `true`
+* The object has its `engine` property set to reference the engine
+* If the object is a `Particle` (see below), it gets labeled with "particle" in addition to a user defined label
+
+###### Properties
+
+* `on`: The object's `update` method is only called when `on === true`
+* `hide`: The object's `draw` method is only called when `hide === false`
+* `z`: This controls the draw order of your objects. Higher z values appear over lower ones. It also controls click handling, directing which object intercepts your click first.
+
+###### Methods
+
+A game object is just any object that may optionally have the following methods.
+
+* `update()`: As long as `obj.on === true`, this method is called a guaranteed 60 times per second.
+* `draw(ctx)`: As long as `obj.hide === false`, this method is called as often as possible. `ctx` is the game canvas context, and gives you full control over how you want the object to draw.
+
+###### GameObject class
+
+There is a `GameObject` class in `./objects/GameObject.js` which is a helper for your game objects. Using it is totally optional.
+
+You can instantiate a raw game object without your own customizations.
+
+`avo.register(new GameObject(avo, shape));`
+
+You can also extend `GameObject` to build your own custom objects.
+
+```javascript
+class MyObject extends GameObject {
+  constructor(...) {
+    super(avo, shape);
+  }
+}
+```
+
+`shape` is an object that determines your game object's starting rectangle. You can either provide `x`, `y`, `w`, and `h`, which will define the rect with `x`, `y` defining the top left of the object and `w`, `h` defining the width and height of its rectangle, or you can define it with `x`, `y`, and `radius` in which case `x`, `y` will define the center of the object, and `radius` will define the width and height of the rectangle as `2 * radius`.
+
+###### Methods
+
+Your game object will have the following methods.
+
+* `offscreen(by = 0)`: Returns true if game object has left the screen. You can specify `by` to only return true when the object has gone a certain distance off the screen. This can be nice to handle some objects auto de registering off screen, like projectiles.
+* `onCollision(callback, target = "all")`: Sets a callback method to call whenever this object overlaps any other game object with label "all". Note that "all" is a special label that will cause a collision with any other game object. The callback should receive an object, which will be a reference to the colliding object.
+* `lineIntercept(x, y, dir)`: Tests if a line starting at point x, y, and moving in direction `dir`, defined in radians, and returns the coordinates of that collision. Returns false if there is no overlap. This could be used to determine bullet trajectory collisions.
+* `draw(ctx)`: Draws your game object as a rectangle. This is used primarily for testing, showing your game object before you've defined your own draw method. It can also be called as `super.draw(ctx)` from your own draw method to give your object a collision box behind it to help debug.
+
+###### Getters
+
+There are getters for some special properties, that are managed by the setters below.
+
+* `x`: Returns the center X position of the object.
+* `y`: Returns the center Y position of the object.
+* `pos`: Returns (x, y) as a `Coord` object.
+* `rect`: The objects rectangle as a `Rectangle` object.
+* `radius`: Returns the radius of an object.
+* `originX`: Returns the left X position of the object.
+* `originY`: Returns the top Y position of the object.
+* `screenRect`: Returns a `Rectangle` that represents the objects apparent position on the screen. This reflects the objects normal rect unless the objects `cam` property is set to a `Camera` object.
+
+###### Setters
+
+All properties listed above in "getters" can be set directly, and the game object will appropriately update all the other values with the change.
+
+## Keyboard Input
+
+## Mouse Input
+
+## Image Library
+
+## Audio Library
+
+## Game Math
 
 ## Particle Engine
 
