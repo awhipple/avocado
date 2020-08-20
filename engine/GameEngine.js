@@ -151,7 +151,7 @@ export default class GameEngine {
     }
   }
 
-  getObjects(name) {
+  getObjects(name = "all") {
     this.gameObjects[name] = this.gameObjects[name] || {}
     return this.gameObjects[name] ? Object.values(this.gameObjects[name]) : [];
   }

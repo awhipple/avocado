@@ -1,4 +1,4 @@
-import Avocado from "./engine/GameEngine.js";
+import Avocado from "./node_modules/avocado2d/engine/GameEngine.js"
 
 window.onload = function() {
   (new Game()).start();
