@@ -1,3 +1,11 @@
+# Avocado
+
+Avocado is a 2d javascript canvas based game engine, written entirely by Aaron Whipple. It's designed to be simple to use, unobtrusive, and to give you as much control over your game loop as possible.
+
+On the command line execute the following in your project directory.
+
+`npm install avocado2d`
+
 ## Particle Engine
 
 Avocado includes a graphical particle engine. This can be used to create a variety of dynamically defined effects.
@@ -34,6 +42,7 @@ You can pass 1 or more transition objects to the new particle. This will serve a
 
 Transition Properties:
 
+
 | Name | default | Range | Description |
 | - | - | - | - |
 | x | 50 | (-∞, ∞) | The horizontal screen position of the particle, starting from the left at 0. |
@@ -47,10 +56,9 @@ Transition Properties:
 | by | - | (-∞, ∞) | Read below for more details on Bezier curves. |
 | duration | - | [0, ∞) | The time in seconds to make it to the next transition state. |
 
-
 #### Missing Values
 
-Notice how all these properties are marked above as optional. Any transition can contain any subset of values. In the case that the first transition object lacks a particular property, it will take on the default value. Subsequent missing values will interpolate smoothly across the transitions until the next transition that contains it. 
+Notice how all these properties are marked above as optional. Any transition can contain any subset of values. In the case that the first transition object lacks a particular property, it will take on the default value. Subsequent missing values will interpolate smoothly across the transitions until the next transition that contains it.
 
 Ex.
 
@@ -64,7 +72,6 @@ Ex.
 
 In this case, the particle starts at (500, 500) with a green hue. Because no duration is provided in the first transition it will take one second for the green to fade to the black from transition 2. After this it will start animating toward the 3rd transition, moving and fading linearly to (500, 0) over the course of 3 seconds.
 
-
 #### Bezier Curves
 
 A Bezier curve allows a particle to follow a curved path. `bx` and `by` are not standard transition properties, as they define the curve for a change to `x` and `y` in the same transition, but they themselves do not transition, or affect the position of particles in subsequent transitions.
@@ -72,7 +79,6 @@ A Bezier curve allows a particle to follow a curved path. `bx` and `by` are not 
 Read more here to figure out how to place your Bezier point to get a curve.
 
 [https://javascript.info/bezier-curve]()
-
 
 #### Transition Functions
 
