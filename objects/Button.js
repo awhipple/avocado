@@ -1,4 +1,4 @@
-import { BoundingRect } from "../GameMath.js";
+import { BoundingRect } from "../engine/GameMath.js";
 
 export default class Button {
   hover = false;

@@ -1,4 +1,4 @@
-import { NEXT_ORIENTATION, BoundingRect, Coord } from "../GameMath.js";
+import { NEXT_ORIENTATION, BoundingRect, Coord } from "../engine/GameMath.js";
 
 export default class Image {
   static MIRROR_FLIP = {

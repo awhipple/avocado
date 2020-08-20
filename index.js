@@ -1,4 +1,4 @@
-import Avocado from "./GameEngine.js";
+import Avocado from "./engine/GameEngine.js";
 import Particle from "./gfx/shapes/Particle.js";
 
 window.onload = function() {

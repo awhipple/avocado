@@ -1,4 +1,4 @@
-import { BoundingRect, Coord } from "../GameMath.js";
+import { BoundingRect, Coord } from "../engine/GameMath.js";
 
 export default class GameObject {
   on = true;

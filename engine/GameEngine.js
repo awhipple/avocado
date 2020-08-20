@@ -1,12 +1,12 @@
-import GameWindow from './gfx/GameWindow.js';
-import ImageLibrary from './gfx/ImageLibrary.js';
-import { KeyNames, MouseButtonNames } from './input/Enums.js';
+import GameWindow from '../gfx/GameWindow.js';
+import ImageLibrary from '../gfx/ImageLibrary.js';
+import { KeyNames, MouseButtonNames } from '../input/Enums.js';
 import { Coord } from './GameMath.js';
-import Button from './objects/Button.js';
-import FullscreenSplash from './objects/FullScreenSplash.js';
+import Button from '../objects/Button.js';
+import FullscreenSplash from '../objects/FullScreenSplash.js';
 import AudioLibrary from './AudioLibrary.js';
-import FlashText from './gfx/FlashText.js';
-import Particle from './gfx/shapes/Particle.js';
+import FlashText from '../gfx/FlashText.js';
+import Particle from '../gfx/shapes/Particle.js';
 
 export default class GameEngine {
   images = new ImageLibrary();
