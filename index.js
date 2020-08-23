@@ -65,6 +65,34 @@ var galRotate = 0;
 var bezierCount = 0;
 var effects = [
   {
+    name: "sweep",
+    particles: () => {
+      var partList = [];
+      for ( var i = 0; i < 7; i ++ ) {
+        var rad = Math.random()*Math.PI*2;
+        var spreadRadius = 200;
+        var r = Math.random(), g = Math.random(), b = Math.random();
+        partList.push(new Particle([
+            {x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 20, duration: 0.5},
+            {duration: Math.random() * 2},
+            {
+              r: r * 64, g: g * 80, b: b * 256, radius: 50, duration: 0.5
+            },
+            {
+              r: r * 256, g: g * 256, b: b * 256, duration: 0.5,
+            },
+            {
+              x: 750 + Math.cos(rad) * spreadRadius * Math.random(), y: 600 + Math.sin(rad) * spreadRadius * Math.random(),
+              bx: -200 + Math.cos(rad) * spreadRadius, by: -400 + Math.sin(rad) * spreadRadius,
+              radius: 0,
+            }
+          ]
+        ));
+      }
+      return partList;
+    }
+  },
+  {
     name: "twinkle",
     particles: () => {
       var partList = [];

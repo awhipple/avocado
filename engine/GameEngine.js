@@ -200,7 +200,6 @@ export default class GameEngine {
 
     // Developer provided game loop
     this.gameLoop?.();
-    
 
     // Game Object rectangle collision callbacks
     this.gameObjects.all.forEach(obj => {
