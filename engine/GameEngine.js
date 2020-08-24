@@ -189,7 +189,7 @@ export default class GameEngine {
       obj.on && obj.update?.(time);
     });
     for ( var i = this.gameObjects.all.length - 1; i >= 0; i--) {
-      if ( this.gameObjects.all[i].die ) this.gameObjects.all.splice(i, 1);
+      if ( this.gameObjects.all[i].die ) this.unregister(this.gameObjects.all[i]);
     }
   
     var pressedKeys = Object.keys(this.pressedKeys);
