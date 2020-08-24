@@ -15,6 +15,7 @@ export default class Game {
     });
 
     this.currentEffect = 0;
+    this.frameCount = 0;
 
     var div = document.createElement("div");
     div.style = "padding:50px;position: absolute; top: 0"
@@ -46,8 +47,14 @@ export default class Game {
   start() {
     this.avo.load().then(() => {
       this.avo.onUpdate(() => {
+        this.frameCount++;
         var effect = effects[this.currentEffect];
-        this.avo.register(effect.particles());
+        if ( this.frameCount >= (effect?.every ?? 1)) {
+          this.frameCount = 0;
+          for ( var i = 0; i < (effect?.times ?? 1); i++ ) {
+            this.avo.register(effect.particles());
+          }
+        }
       });
     });
   }
@@ -65,30 +72,44 @@ var galRotate = 0;
 var bezierCount = 0;
 var effects = [
   {
+    name: "homing",
+    every: 15,
+    particles: () => new Particle([
+      {x: 500, y: 800, r: 50, g: 255, b: 225, radius: 0, duration: 0.1},
+      {radius: 20, duration: Math.random() * 0.4 + 0.2},
+      {radius: 20, duration: 0.02},
+      {
+        x: 500, y: 200,
+        bx: 500 + (Math.random() < 0.5 ? -1 : 1) * Math.random() * 500,
+        radius: 0
+      },
+    ]),
+  },
+  {
     name: "sweep",
+    every: 200,
+    times: 1,
     particles: () => {
       var partList = [];
-      for ( var i = 0; i < 7; i ++ ) {
-        var rad = Math.random()*Math.PI*2;
-        var spreadRadius = 200;
-        var r = Math.random(), g = Math.random(), b = Math.random();
-        partList.push(new Particle([
-            {x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 20, duration: 0.5},
-            {duration: Math.random() * 2},
-            {
-              r: r * 64, g: g * 80, b: b * 256, radius: 50, duration: 0.5
-            },
-            {
-              r: r * 256, g: g * 256, b: b * 256, duration: 0.5,
-            },
-            {
-              x: 750 + Math.cos(rad) * spreadRadius * Math.random(), y: 600 + Math.sin(rad) * spreadRadius * Math.random(),
-              bx: -200 + Math.cos(rad) * spreadRadius, by: -400 + Math.sin(rad) * spreadRadius,
-              radius: 0,
-            }
-          ]
-        ));
-      }
+      var rad = Math.random()*Math.PI*2;
+      var spreadRadius = 200;
+      var r = Math.random(), g = Math.random(), b = Math.random();
+      partList.push(new Particle([
+          {x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 20, duration: 0.5},
+          {duration: Math.random() * 2},
+          {
+            r: r * 64, g: g * 80, b: b * 256, radius: 50, duration: 0.5
+          },
+          {
+            r: r * 256, g: g * 256, b: b * 256, duration: 0.5,
+          },
+          {
+            x: 750 + Math.cos(rad) * spreadRadius * Math.random(), y: 600 + Math.sin(rad) * spreadRadius * Math.random(),
+            bx: -200 + Math.cos(rad) * spreadRadius, by: -400 + Math.sin(rad) * spreadRadius,
+            radius: 0,
+          }
+        ]
+      ));
       return partList;
     }
   },

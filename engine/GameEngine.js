@@ -165,26 +165,28 @@ export default class GameEngine {
   }
 
   startGameLoop() {
-    this.nextTick = (new Date).getTime() - 100 * 1000;
+    this.lastTick = 0;
 
-    var engineLoop = () => {
+    var engineLoop = (time) => {
       requestAnimationFrame(engineLoop);
 
       this.loops = 0;
-      while (new Date().getTime() > this.nextTick && this.loops < 10) {
-        this.update();
-        this.nextTick += 1000/60;
+      while (time > this.lastTick && this.loops < 1) {
+        this.update(time);
+        this.lastTick += 1000/60;
         this.loops++;
       }
-      this.nextTick = Math.max(this.nextTick, new Date().getTime());
+      if ( this.loops === 10 ) {
+        this.lastTick = time;
+      }
     };
 
     requestAnimationFrame(engineLoop);
   }
 
-  update() {
+  update(time) {
     this.gameObjects.all.forEach(obj => {
-      obj.on && obj.update?.(this);
+      obj.on && obj.update?.(time);
     });
   
     var pressedKeys = Object.keys(this.pressedKeys);

@@ -179,7 +179,6 @@ export default class Particle extends GameObject {
         }
         deltaTransitions.push(newDt);
       }
-      return deltaTransitions;
     });
     return deltaTransitions;
   }
