@@ -87,8 +87,7 @@ var effects = [
   },
   {
     name: "sweep",
-    every: 200,
-    times: 1,
+    times: 7,
     particles: () => {
       var partList = [];
       var rad = Math.random()*Math.PI*2;
