@@ -171,7 +171,7 @@ export default class GameEngine {
       requestAnimationFrame(engineLoop);
 
       this.loops = 0;
-      while (time > this.lastTick && this.loops < 1) {
+      while (time > this.lastTick && this.loops < 10) {
         this.update(time);
         this.lastTick += 1000/60;
         this.loops++;
