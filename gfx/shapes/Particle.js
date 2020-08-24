@@ -64,7 +64,7 @@ export default class Particle extends GameObject {
     }
 
     if ( this.engine && this.timer > this.lifeSpan ) {
-      this.engine.unregister(this);
+      this.die = true;
     }
 
     var tran = this.transitions[this.currentTran];

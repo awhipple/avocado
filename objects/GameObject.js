@@ -2,6 +2,7 @@ import { BoundingRect, Coord } from "../engine/GameMath.js";
 
 export default class GameObject {
   on = true;
+  die = false;
   collisionCallbacks = {};
   collision = "rectangle";
 

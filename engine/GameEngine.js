@@ -188,6 +188,9 @@ export default class GameEngine {
     this.gameObjects.all.forEach(obj => {
       obj.on && obj.update?.(time);
     });
+    for ( var i = this.gameObjects.all.length - 1; i >= 0; i--) {
+      if ( this.gameObjects.all[i].die ) this.gameObjects.all.splice(i, 1);
+    }
   
     var pressedKeys = Object.keys(this.pressedKeys);
     for( var i = 0; i < this.keyDownCallbacks.length; i++ ) {
