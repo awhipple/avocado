@@ -283,7 +283,7 @@ function generateParticle(size = 50) {
   var iData = ctx.getImageData(0, 0, size, size);
   var data = iData.data;
 
-  var i = 0, center = size / 2;
+  var i = 0, center = size / 2 - 1;
   for ( var y = 0; y < size; y++ ) {
     for ( var x = 0; x < size; x++ ) {
       var dist = Math.sqrt(Math.pow(x-center, 2) + Math.pow(y-center, 2));
