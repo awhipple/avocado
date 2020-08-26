@@ -81,7 +81,7 @@ var galRotate = 0;
 var effects = [
   {
     name: "supernova",
-    every: 1250,
+    every: 1100,
     times: 8,
     particles: () => {
       var g = Math.random() * 128 + 128;
@@ -91,11 +91,9 @@ var effects = [
         { radius: [400, "easeIn"], duration: 2 },
         { radius: [450, "easeOut"], duration: 0.4 },
         { radius: [400, "easeIn"], duration: 2 },
-        { radius: [450, "easeOut"], duration: 0.4 },
-        { radius: [400, "easeIn"], duration: 2 },
         { radius: [450, "easeBoth"], duration: 0.4 },
         { duration: 4 },
-        { r: 255, g, b: 0, radius: [465, d => d % 0.01 > 0.005 ? 0 : d], duration: 0.4 },
+        { r: 255, g, b: 0, radius: [470, "volatile"], duration: 0.4 },
         { radius: [25, "easeIn"], r: 255, g: 255, b: 255, duration: 0.5 },
         { x: 500, y: 500, radius: 15, duration: 0.5 },
         { x: Math.random() * 2000 - 500, y: Math.random() * 2000 - 500, radius: 1500, alpha: 1, duration: 5 },

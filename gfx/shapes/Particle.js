@@ -11,12 +11,14 @@ export default class Particle extends GameObject {
     radius: 50, alpha: 1,
   };
   static transitionFunctions = {
+    none: d => 0,
     easeIn: d => Math.sin(d * Math.PI/2),
     easeOut: d => 1 - Math.sin((1-d) * Math.PI/2),
     easeBoth: d => {
       var dist = Math.pow((0.5-Math.abs(0.5-d))/0.5, 2)*0.5;
       return d < 0.5 ? dist : 1 - dist;
     },
+    volatile: d => d % 0.01 > 0.005 ? 0 : d,
   }
   
   z = 1000;
@@ -60,6 +62,7 @@ export default class Particle extends GameObject {
       this.transitions[this.currentTran + 1] && 
       this.timer > this.transitions[this.currentTran + 1].time 
     ) {
+      this._setState(this._generateDeltaState(1, true));
       this.currentTran++;
     }
 
@@ -68,7 +71,7 @@ export default class Particle extends GameObject {
     }
 
     var tran = this.transitions[this.currentTran];
-    this._setState(this._generateDeltaState(((this.timer - tran.time) / tran.duration)));
+    this._setState(this._generateDeltaState((this.timer - tran.time) / tran.duration));
   }
 
   draw(ctx) {
@@ -183,12 +186,12 @@ export default class Particle extends GameObject {
     return deltaTransitions;
   }
 
-  _generateDeltaState(delta) {
+  _generateDeltaState(delta, finalFrameState = false) {
     var newDeltaState = {};
     var tran = this.deltaTransitions[this.currentTran];
     for ( var key in tran ) {
       var t = tran[key];
-      var frameDelta = t[4](delta * (t[3] - t[2]) + t[2]);
+      var frameDelta = (finalFrameState ? ()=>1 : t[4])(delta * (t[3] - t[2]) + t[2]);
       newDeltaState[key] = t[0] + t[1] * frameDelta;
 
       if ( t[5] !== undefined ) {
@@ -208,7 +211,11 @@ export default class Particle extends GameObject {
     ['r', 'g', 'b'].forEach(color => {
       this.transitions.forEach(transition => {
         if ( transition?.hasOwnProperty(color) ) {
-          transition[color] = Math.round(transition[color]/opt)*opt;
+          if ( Array.isArray(transition[color]) ) {
+            transition[color][0] = Math.round(transition[color][0]/opt)*opt;
+          } else {
+            transition[color] = Math.round(transition[color]/opt)*opt;
+          }
         }
       });
     });
