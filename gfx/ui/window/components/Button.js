@@ -1,6 +1,6 @@
 import { UIComponent } from "../UIComponent.js";
 import Text from "../../../Text.js";
-import { BoundingRect } from "../../../../GameMath.js";
+import { BoundingRect } from "../../../../engine/GameMath.js";
 
 export default class Button extends UIComponent{
   constructor(engine, options = {}) {

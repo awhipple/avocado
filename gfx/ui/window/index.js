@@ -1,8 +1,8 @@
 import GameObject from '../../../objects/GameObject.js';
 import nativeComponents from './nativeComponents.js';
-import { BoundingRect } from '../../../GameMath.js';
+import { BoundingRect } from '../../../engine/GameMath.js';
 import Text from '../../Text.js';
-import { shallow } from '../../../Tools.js';
+import { shallow } from '../../../engine/Tools.js';
 
 export default class UIWindow extends GameObject {
   scroll = 0;

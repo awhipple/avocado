@@ -1,6 +1,6 @@
 import GameObject from "../../objects/GameObject.js";
 import Particle from "../shapes/Particle.js";
-import { Coord, getDirectionFrom } from "../../GameMath.js";
+import { Coord, getDirectionFrom } from "../../engine/GameMath.js";
 
 export default class Lightning extends GameObject {
   alpha = 1
