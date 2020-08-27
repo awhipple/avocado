@@ -19,6 +19,7 @@ export default class Particle extends GameObject {
       return d < 0.5 ? dist : 1 - dist;
     },
     volatile: d => d % 0.01 > 0.005 ? 0 : d,
+    random: d => Math.random(),
   }
   
   z = 1000;

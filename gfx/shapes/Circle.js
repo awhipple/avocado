@@ -1,4 +1,4 @@
-import { Coord } from "../../GameMath.js";
+import { Coord } from "../../engine/GameMath.js";
 
 export default class Circle {
   static _singleton = new Circle(new Coord(0, 0), 0);
