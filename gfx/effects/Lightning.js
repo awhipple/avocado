@@ -87,7 +87,6 @@ export default class Lightning extends GameObject {
         this.points.forEach(point => {
           if ( Math.random() < 0.5) {
             this.engine.register(new Particle(
-              this.engine,
               {
                 start: {
                   ...point,
