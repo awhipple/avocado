@@ -80,6 +80,20 @@ function rCol() {
 var galRotate = 0;
 var effects = [
   {
+    name: "rain with splash",
+    every: 1,
+    times: 5,
+    particles: () => {
+      var x = Math.random() * 1000;
+      return new Particle([
+        { x, y: -20, radius: 10, r: 128, g: 128, b: 255, duration: 0.4 + Math.random() * 0.2 },
+        { y: 1000, radius: 10, r: 0, g: 0, duration: 0 },
+        { radius: 4, r: 128, g: 128, duration: 0.5 },
+        { x: x + Math.random() * 400 - 200, y: 1000, by: 600 + Math.random() * 200, radius: 5 }
+      ]);
+    }
+  },
+  {
     name: "supernova",
     every: 1100,
     times: 8,
