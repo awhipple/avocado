@@ -78,7 +78,34 @@ function rCol() {
 }
 
 var galRotate = 0;
+
+var lines = 50;
+var lineSpeeds = [];
+for ( var i = 0; i < lines; i++ ) {
+  lineSpeeds.push(0.12 + Math.random() * 0.06);
+}
 var effects = [
+  {
+    name: "streams",
+    every: 1,
+    times: 5,
+    particles: () => {
+      var space = 1000 / (lines + 1);
+      var line = Math.floor(Math.random() * lines);
+      var x = (line + 1) * space;
+      var speed = lineSpeeds[line];
+      return new Particle([
+        {x, y: -10, b: 255, radius: 5, duration: speed},
+        [
+          10,
+          {g: 0, alpha: 0, duration: speed},
+          {g: 128, alpha: 1, duration: speed},
+        ],
+        {alpha: 0, duration: speed},
+        {y: 1010, alpha: 1},
+      ]);
+    }
+  },
   {
     name: "rain with splash",
     every: 1,

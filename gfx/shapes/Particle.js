@@ -1,5 +1,6 @@
 import Image from "../Image.js";
 import GameObject from "../../objects/GameObject.js";
+import { shallow } from "../../engine/Tools.js";
 
 export default class Particle extends GameObject {
   static drawQueue = [];
@@ -42,6 +43,19 @@ export default class Particle extends GameObject {
     }
     if ( this.transitions.length === 1 ) {
       this.transitions.push({});
+    }
+
+    for ( var i = 0; i < this.transitions.length; i++ ) {
+      var tran = this.transitions[i];
+      if ( Array.isArray(tran) ) {
+        var repeat = this.transitions.splice(i, 1)[0];
+        var times = repeat.shift();
+        for ( var k = 0; k < times; k++ ) {
+          var newR = [];
+          repeat.forEach(obj => newR.push(shallow(obj)));
+          this.transitions.splice(i, 0, ...newR);
+        }
+      }
     }
 
     this._normalizeTransitionColors(options.optimizeColors ?? 16);
