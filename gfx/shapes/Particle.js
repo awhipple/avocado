@@ -350,7 +350,7 @@ function generateParticleSheet(part) {
   
   for ( var y = 0; y < 1000; y += 50 ) {
     for ( var x = 0; x < 1000; x += 50 ) {
-      part.draw(ctx, x, y);
+      part.draw(ctx, x, y, 50, 50);
     }
   }
 
