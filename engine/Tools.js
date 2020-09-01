@@ -11,11 +11,13 @@ export function shallow(obj, depth = 1) {
         }
       }
     });
-  } else if ( typeof obj === "array" ) {
-    console.log("Arrays aren't copied yet");
+  } else if ( Array.isArray(obj) ) {
     newObj = [];
+    obj.forEach(ele => newObj.push(depth > 1 ? shallow(ele, depth - 1) : ele));
   } else if ( typeof obj === "string" ) {
     newObj = (' ' + obj).slice(1);
+  } else {
+    newObj = obj;
   }
   return newObj;
 }

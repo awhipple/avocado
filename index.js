@@ -14,6 +14,8 @@ export default class Game {
       ...options
     });
 
+    this.avo.images.preload("spark");
+
     this.currentEffect = 0;
     this.frameCount = 0;
 
@@ -97,13 +99,15 @@ var effects = [
       return new Particle([
         {x, y: -10, b: 255, radius: 5, duration: speed},
         [
-          10,
+          Math.floor(Math.random() * 10) + 5,
           {g: 0, alpha: 0, duration: speed},
           {g: 128, alpha: 1, duration: speed},
         ],
         {alpha: 0, duration: speed},
-        {y: 1010, alpha: 1},
-      ]);
+        {y: [1010, "easeOut"], alpha: 1},
+      ], {
+        imgName: Math.random() < 0.5 ? "spark" : "",
+      });
     }
   },
   {
@@ -141,21 +145,6 @@ var effects = [
         { alpha: 0 },
       ]);
     }
-  },
-  {
-    name: "rainbow rain",
-    particles: () => new Particle([
-      {x: Math.random() * 900 + 50, y: -50, radius: Math.random() * 40 + 10, ...rCol(), duration: 0.2},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {duration: 0.2, ...rCol()},
-      {y: [1050, "easeOut"]},
-    ]),
   },
   {
     name: "sweep",
@@ -402,7 +391,7 @@ var effects = [
     },
   },
   {
-    name: "whirlpool",
+    name: "wormhole",
     particles: () => {
       var rad = Math.random() * Math.PI * 2;
       return new Particle({

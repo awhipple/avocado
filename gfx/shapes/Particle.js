@@ -5,7 +5,7 @@ import { shallow } from "../../engine/Tools.js";
 export default class Particle extends GameObject {
   static drawQueue = [];
   static particleColorMap = {};
-  static partSheets = [];
+  static partSheets = {};
   static propertyDefaults = {
     x: 50, y: 50,
     r: 0, g: 0, b: 0,
@@ -25,11 +25,14 @@ export default class Particle extends GameObject {
   
   z = 1000;
 
-  constructor(options = {}) {
+  // This stuff got a little funky due to maintaining backwards compatibility.
+  // Intended usage is new Particle([ <transitions ], { <options> })
+  // However, other legacy formats are also supported.
+  constructor(options = {}, secondaryOptions = {}) {
     super(null, {x: 50, y: 50, radius: 50});
 
     if ( Array.isArray(options) ) {
-      options = { transitions: options };
+      options = { transitions: options, ...secondaryOptions };
     }
 
     this.transitions = options.transitions;
@@ -67,6 +70,7 @@ export default class Particle extends GameObject {
     this.lifeSpan = this.transitions[this.transitions.length-1].time;
 
     this.z = options.z ?? this.z;
+    this.imgName = options.imgName ?? "";
     this.timer = 0;
   }
 
@@ -90,11 +94,14 @@ export default class Particle extends GameObject {
   }
 
   draw(ctx) {
+    if ( this.alpha <= 0 ) {
+      return;
+    }
     var { x: px, y: py, w: pw, h: ph } = this.rect;
     var old = ctx.globalAlpha;
     ctx.globalAlpha = this.alpha;
     if ( this.drawTarget ) {
-      ctx.drawImage(Particle.partSheets[this.drawTarget.sheet].can, this.drawTarget.x, this.drawTarget.y, 50, 50, px, py, pw, ph);
+      ctx.drawImage(Particle.partSheets[this.imgName][this.drawTarget.sheet].can, this.drawTarget.x, this.drawTarget.y, 50, 50, px, py, pw, ph);
     }
     ctx.globalAlpha = old;
   }
@@ -124,6 +131,13 @@ export default class Particle extends GameObject {
   set b(val) {
     this._b = Math.floor(val);
     this._changeColor();
+  }
+
+  get img() {
+    if ( !this._img ) {
+      this._img = this.imgName === "" ? generateParticle() : this.engine.images.get(this.imgName);
+    }
+    return this._img;
   }
 
   _changeColor() {
@@ -245,52 +259,59 @@ export default class Particle extends GameObject {
   static _resetParticleSheet() {
     this.drawQueue = [];
     this.particleColorMap = {};
-    Particle.tSheet = undefined;
+    Particle.tSheet = {};
+    Particle.tx = {};
+    Particle.ty = {};
   }
 
   static _queueForDraw(particle) {
     Particle.drawQueue.push(particle);
-    if ( Particle.particleColorMap[particle.col] === undefined) {
-      Particle.particleColorMap[particle.col] = Particle._getNextSheetParticle();
+    var pLookup = particle.imgName + ":" + particle.col;
+    if ( Particle.particleColorMap[pLookup] === undefined) {
+      Particle.particleColorMap[pLookup] = Particle._getNextSheetParticle(particle.imgName);
     }
-    particle.drawTarget = Particle.particleColorMap[particle.col];
+    particle.drawTarget = Particle.particleColorMap[pLookup];
   }
 
   static _drawParticleSheets() {
     Particle.drawQueue.forEach(particle => {
       var draw = particle.drawTarget;
-      if ( !Particle.particleColorMap[particle.col].drawn ) {
-        if ( draw.sheet >= Particle.partSheets.length ) {
-          var can = generateParticleSheet();
-          Particle.partSheets.push({can, ctx: can.getContext("2d")});
+      var pLookup = particle.imgName + ":" + particle.col;
+      if ( !Particle.particleColorMap[pLookup].drawn ) {
+        if ( !Particle.partSheets[particle.imgName] ) {
+          Particle.partSheets[particle.imgName] = [];
         }
-        var sheetCtx = Particle.partSheets[draw.sheet].ctx;
+        if ( draw.sheet >= Particle.partSheets[particle.imgName].length ) {
+          var can = generateParticleSheet(particle.img);
+          Particle.partSheets[particle.imgName].push({can, ctx: can.getContext("2d")});
+        }
+        var sheetCtx = Particle.partSheets[particle.imgName][draw.sheet].ctx;
         sheetCtx.fillStyle = particle.col;
         sheetCtx.fillRect(draw.x, draw.y, 50, 50);
-        Particle.particleColorMap[particle.col].drawn = true;
+        Particle.particleColorMap[pLookup].drawn = true;
       }
     });
     // console.log("Drawing " + Object.keys(Particle.particleColorMap).length + "/" + Particle.drawQueue.length + " particles on " + Particle.partSheets.length + " sheets.");
   }
 
-  static _getNextSheetParticle() {
-    if ( Particle.tSheet === undefined ) {
-      Particle.tx = -50;
-      Particle.ty = 0;
-      Particle.tSheet = 0;
+  static _getNextSheetParticle(type = "") {
+    if ( Particle.tSheet[type] === undefined ) {
+      Particle.tx[type] = -50;
+      Particle.ty[type] = 0;
+      Particle.tSheet[type] = 0;
     }
 
-    Particle.tx += 50;
-    if ( Particle.tx >= 1000 ) {
-      Particle.tx = 0;
-      Particle.ty += 50;
-      if ( Particle.ty >= 1000 ) {
-        Particle.ty = 0;
-        Particle.tSheet++;
+    Particle.tx[type] += 50;
+    if ( Particle.tx[type] >= 1000 ) {
+      Particle.tx[type] = 0;
+      Particle.ty[type] += 50;
+      if ( Particle.ty[type] >= 1000 ) {
+        Particle.ty[type] = 0;
+        Particle.tSheet[type]++;
       }
     }
 
-    return { sheet: Particle.tSheet, x: Particle.tx, y: Particle.ty, drawn: false };
+    return { sheet: Particle.tSheet[type], x: Particle.tx[type], y: Particle.ty[type], drawn: false };
   }
 }
 
@@ -321,8 +342,8 @@ function generateParticle(size = 50) {
   return generateParticle.particle = new Image(can);
 }
 
-function generateParticleSheet() {
-  var part = generateParticle(50);
+function generateParticleSheet(part) {
+  part = part ?? generateParticle(50);
   var sheet = document.createElement("canvas");
   sheet.width = sheet.height = 1000;
   var ctx = sheet.getContext("2d");
