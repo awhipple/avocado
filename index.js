@@ -100,8 +100,10 @@ var effects = [
         rot -= Math.PI*3*Math.random() + 1;
         anim.push({dir: [rot, "easeBoth"], duration: 0.5});
       }
-      anim.push({ dir: [6.28, "easeBoth"], x: 1100, radius: 60 + Math.random() * 40, r: 128, g: 0, b: [255, "easeIn"] });
-      return new Particle(anim, { imgName: "face" });
+      return [
+        new Particle([...anim, { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: -200, radius: 60 + Math.random() * 40, r: 128, g: 0, b: [255, "easeIn"] }], { imgName: "face" }),
+        new Particle([...anim, { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: 1200, radius: 60 + Math.random() * 40, r: 128, g: 0, b: [255, "easeIn"] }], { imgName: "face" }),
+      ]      
     }
   },
   {
