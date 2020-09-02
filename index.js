@@ -92,7 +92,7 @@ var effects = [
     every: 60,
     times: 1,
     particles: () => {
-      var anim = [ { x: -100, y: 500, radius: 20, g: 255, duration: 0.2 } ];
+      var anim = [ { x: -100, y: 500, radius: 20, g: 255, duration: 3 } ];
       var rot = 0;
       for ( var i = 0; i < 8; i++ ) {
         rot += Math.PI*3*Math.random() + 0.1;

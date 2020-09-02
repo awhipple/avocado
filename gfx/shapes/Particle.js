@@ -94,7 +94,7 @@ export default class Particle extends GameObject {
   }
 
   draw(ctx) {
-    if ( this.alpha <= 0 || this.radius <= 0) {
+    if ( this.alpha <= 0 ) {
       return;
     }
     if ( this.drawTarget ) {
@@ -113,7 +113,7 @@ export default class Particle extends GameObject {
         ctx.translate(-px - pw/2, -py - ph/2);
       }
       ctx.globalAlpha = old;
-      
+
     }
   }
 
