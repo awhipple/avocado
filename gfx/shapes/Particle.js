@@ -9,7 +9,7 @@ export default class Particle extends GameObject {
   static propertyDefaults = {
     x: 50, y: 50,
     r: 0, g: 0, b: 0,
-    radius: 50, alpha: 1,
+    dir: 0, radius: 50, alpha: 1,
   };
   static transitionFunctions = {
     none: d => 0,
@@ -94,16 +94,27 @@ export default class Particle extends GameObject {
   }
 
   draw(ctx) {
-    if ( this.alpha <= 0 ) {
+    if ( this.alpha <= 0 || this.radius <= 0) {
       return;
     }
-    var { x: px, y: py, w: pw, h: ph } = this.rect;
-    var old = ctx.globalAlpha;
-    ctx.globalAlpha = this.alpha;
     if ( this.drawTarget ) {
-      ctx.drawImage(Particle.partSheets[this.imgName][this.drawTarget.sheet].can, this.drawTarget.x, this.drawTarget.y, 50, 50, px, py, pw, ph);
+      var { x: px, y: py, w: pw, h: ph } = this.rect;
+      var old = ctx.globalAlpha;
+      ctx.globalAlpha = this.alpha;
+      var { can } = Particle.partSheets[this.imgName][this.drawTarget.sheet];
+
+      if ( this.dir === 0 ) {
+        ctx.drawImage(can, this.drawTarget.x, this.drawTarget.y, 50, 50, px, py, pw, ph);
+      } else {
+        ctx.translate(px + pw/2, py + ph/2);
+        ctx.rotate(this.dir);
+        ctx.drawImage(can, this.drawTarget.x, this.drawTarget.y, 50, 50, 0 - pw/2, 0 - ph/2, pw, ph);
+        ctx.rotate(-this.dir);
+        ctx.translate(-px - pw/2, -py - ph/2);
+      }
+      ctx.globalAlpha = old;
+      
     }
-    ctx.globalAlpha = old;
   }
 
   get r() {

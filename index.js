@@ -14,7 +14,7 @@ export default class Game {
       ...options
     });
 
-    this.avo.images.preload("spark");
+    this.avo.images.preload(["spark", "face"]);
 
     this.currentEffect = 0;
     this.frameCount = 0;
@@ -87,6 +87,23 @@ for ( var i = 0; i < lines; i++ ) {
   lineSpeeds.push(0.12 + Math.random() * 0.06);
 }
 var effects = [
+  {
+    name: "face parade",
+    every: 60,
+    times: 1,
+    particles: () => {
+      var anim = [ { x: -100, y: 500, radius: 20, g: 255, duration: 0.2 } ];
+      var rot = 0;
+      for ( var i = 0; i < 8; i++ ) {
+        rot += Math.PI*3*Math.random() + 0.1;
+        anim.push({dir: [rot, "easeBoth"], duration: 0.5});
+        rot -= Math.PI*3*Math.random() + 1;
+        anim.push({dir: [rot, "easeBoth"], duration: 0.5});
+      }
+      anim.push({ dir: [6.28, "easeBoth"], x: 1100, radius: 60 + Math.random() * 40, r: 128, g: 0, b: [255, "easeIn"] });
+      return new Particle(anim, { imgName: "face" });
+    }
+  },
   {
     name: "streams",
     every: 1,
