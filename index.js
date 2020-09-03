@@ -14,7 +14,7 @@ export default class Game {
       ...options
     });
 
-    this.avo.images.preload(["spark", "face"]);
+    this.avo.images.preload(["spark", "face", "arrow"]);
 
     this.currentEffect = 0;
     this.frameCount = 0;
@@ -88,7 +88,7 @@ for ( var i = 0; i < lines; i++ ) {
 }
 var effects = [
   {
-    name: "face parade",
+    name: "silly face parade",
     every: 60,
     times: 1,
     particles: () => {
@@ -124,9 +124,7 @@ var effects = [
         ],
         {alpha: 0, duration: speed},
         {y: [1010, "easeOut"], alpha: 1},
-      ], {
-        imgName: Math.random() < 0.5 ? "spark" : "",
-      });
+      ]);
     }
   },
   {
@@ -166,27 +164,34 @@ var effects = [
     }
   },
   {
-    name: "sweep",
-    times: 7,
+    name: "magic arrows",
+    every: 5,
+    times: 2,
     particles: () => {
       var rad = Math.random()*Math.PI*2;
-      var spreadRadius = 200;
+      var spreadRadius = 300;
       var r = Math.random(), g = Math.random(), b = Math.random();
-      return new Particle([
-        {x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 20, duration: 0.5},
-        {duration: Math.random() * 2},
-        {
-          r: r * 64, g: g * 80, b: b * 256, radius: 50, duration: 0.5
-        },
-        {
-          r: r * 256, g: g * 256, b: b * 256, duration: 0.5,
-        },
-        {
-          x: [750 + Math.cos(rad) * spreadRadius * Math.random(), "easeIn"], y: [600 + Math.sin(rad) * spreadRadius * Math.random(), "easeIn"],
-          bx: -200 + Math.cos(rad) * spreadRadius, by: -400 + Math.sin(rad) * spreadRadius,
-          radius: 0,
-        }
-      ]);
+      var duration = Math.random() * 2;
+      var fx = 750 + Math.cos(rad) * spreadRadius * 0.5 * Math.random();
+      var fy = 600 + Math.sin(rad) * spreadRadius * 0.5 * Math.random();
+      var bx = -200 + Math.cos(rad) * spreadRadius * Math.random();
+      var by = -400 + Math.sin(rad) * spreadRadius * Math.random();
+      return [
+        new Particle([
+          { x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 20, duration: 0.5 },
+          { duration },
+          { r: r * 64, g: g * 80, b: b * 256, radius: 50, duration: 0.5 },
+          { r: r * 256, g: g * 256, b: b * 256, duration: 0.5 },
+          { x: [fx, "easeIn"], y: [fy, "easeIn"], bx, by, radius: 0 }
+        ], {imgName: "arrow", faceDirection: true}),
+        new Particle([
+          { x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 40, duration: 0.5, alpha: 0.4 },
+          { duration },
+          { r: r * 64, g: g * 80, b: b * 256, radius: 100, duration: 0.5 },
+          { r: r * 256, g: g * 256, b: b * 256, duration: 0.5 },
+          { x: [fx, "easeIn"], y: [fy, "easeIn"], bx, by, radius: 0 }
+        ]),
+      ];
     }
   },
   {

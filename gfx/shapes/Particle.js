@@ -71,6 +71,8 @@ export default class Particle extends GameObject {
 
     this.z = options.z ?? this.z;
     this.imgName = options.imgName ?? "";
+    this.faceDirection = options.faceDirection ?? false;
+
     this.timer = 0;
   }
 
@@ -89,8 +91,27 @@ export default class Particle extends GameObject {
       this.die = true;
     }
 
-    var tran = this.transitions[this.currentTran];
-    this._setState(this._generateDeltaState((this.timer - tran.time) / tran.duration));
+    var tran = this.transitions[this.currentTran], frameDelta = (this.timer - tran.time) / tran.duration;
+    this._setState(this._generateDeltaState(frameDelta));
+
+    //Compute slope of bezier curves for faceDirection option
+    var dTran = this.deltaTransitions[this.currentTran];
+    if ( this.faceDirection && dTran ) {
+      var dx = dTran.x, sx = dx[0], bx = dx[5], ex = dx[0] + dx[1]
+      var dy = dTran.y, sy = dy[0], by = dy[5], ey = dy[0] + dy[1]
+
+      var tx = dx[4](frameDelta * (dx[3] - dx[2]) + dx[2]);
+      var ty = dy[4](frameDelta * (dy[3] - dy[2]) + dy[2]);
+      
+      // First derivative of Bezier to get slope
+      var rise = typeof by === "number" ? 2*ty*sy - 4*ty*by +2*ty*ey - 2*sy + 2*by : ey - sy;
+      var run = typeof bx === "number" ? 2*tx*sx - 4*tx*bx +2*tx*ex - 2*sx + 2*bx : ex - sx;
+      var slope = rise / run;
+      this.dir = Math.atan(slope);
+      if ( run <= 0 ) {
+        this.dir += Math.PI;
+      }
+    }
   }
 
   draw(ctx) {
@@ -113,7 +134,6 @@ export default class Particle extends GameObject {
         ctx.translate(-px - pw/2, -py - ph/2);
       }
       ctx.globalAlpha = old;
-
     }
   }
 
@@ -235,9 +255,9 @@ export default class Particle extends GameObject {
       newDeltaState[key] = t[0] + t[1] * frameDelta;
 
       if ( t[5] !== undefined ) {
-        var ys1 = t[0] + frameDelta * (t[5] - t[0]);
-        var ys2 = t[5] + frameDelta * (t[0] + t[1] - t[5]);
-        newDeltaState[key] = ys1 + frameDelta * (ys2 - ys1);
+        // Bezier Formula
+        var sy = t[0], by = t[5], ey = t[0] + t[1], t1 = frameDelta, t2 = Math.pow(t1, 2);
+        newDeltaState[key] = t2*sy - 2*t2*by + t2*ey - 2*t1*sy + 2*t1*by + sy;
       }
     }
 
