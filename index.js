@@ -14,7 +14,7 @@ export default class Game {
       ...options
     });
 
-    this.avo.images.preload(["spark", "face", "arrow"]);
+    this.avo.images.preload(["spark", "face", "arrow", "person", "bonnie"]);
 
     this.currentEffect = 0;
     this.frameCount = 0;
@@ -88,25 +88,6 @@ for ( var i = 0; i < lines; i++ ) {
 }
 var effects = [
   {
-    name: "silly face parade",
-    every: 60,
-    times: 1,
-    particles: () => {
-      var anim = [ { x: -100, y: 500, radius: 20, g: 255, duration: 3 } ];
-      var rot = 0;
-      for ( var i = 0; i < 8; i++ ) {
-        rot += Math.PI*3*Math.random() + 0.1;
-        anim.push({dir: [rot, "easeBoth"], duration: 0.5});
-        rot -= Math.PI*3*Math.random() + 1;
-        anim.push({dir: [rot, "easeBoth"], duration: 0.5});
-      }
-      return [
-        new Particle([...anim, { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: -200, radius: 60 + Math.random() * 40, r: 128, g: 0, b: [255, "easeIn"] }], { imgName: "face" }),
-        new Particle([...anim, { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: 1200, radius: 60 + Math.random() * 40, r: 128, g: 0, b: [255, "easeIn"] }], { imgName: "face" }),
-      ]      
-    }
-  },
-  {
     name: "streams",
     every: 1,
     times: 5,
@@ -123,8 +104,35 @@ var effects = [
           {g: 128, alpha: 1, duration: speed},
         ],
         {alpha: 0, duration: speed},
-        {y: [1010, "easeOut"], alpha: 1},
+        {y: [1010, "easeOut"], r: 0, g: 128, b: 255, alpha: 1, radius: 5, duration: 0},
+        {x, y: 1100, r: 255, g: 255, b: 255, alpha: 0.15},
+        {x: x + Math.random() * 500 - 250, y: 980, radius: 120, alpha: 0}
       ]);
+    }
+  },
+  {
+    name: "silly face parade",
+    every: 60,
+    times: 1,
+    particles: () => {
+      var anim = [ { x: -100, y: 500, radius: 20, g: 255, duration: 1 } ];
+      var rot = 0;
+      for ( var i = 0; i < 8; i++ ) {
+        rot += Math.PI*3*Math.random() + 0.3;
+        anim.push({dir: [rot, "easeBoth"], duration: 0.5});
+        rot -= Math.PI*3*Math.random() + 1;
+        anim.push({dir: [rot, "easeBoth"], duration: 0.5});
+      }
+      return [
+        new Particle( [
+          ...anim, 
+          { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: -200, radius: 65 + Math.random() * 30, r: 128, g: 0, b: [255, "easeIn"] }
+        ], { imgName: "bonnie" }),
+        new Particle( [
+          ...anim, 
+          { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: 1200, radius: 65 + Math.random() * 30, r: 128, g: 0, b: [255, "easeIn"] }
+        ], { imgName: "face" }),
+      ]      
     }
   },
   {
@@ -178,19 +186,19 @@ var effects = [
       var by = -400 + Math.sin(rad) * spreadRadius * Math.random();
       return [
         new Particle([
+          { x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 40, duration: 0.5, alpha: 0.6 },
+          { duration },
+          { r: r * 64, g: g * 80, b: b * 256, radius: 100, duration: 0.5 },
+          { r: r * 256, g: g * 256, b: b * 256, duration: 0.5 },
+          { x: [fx, "easeIn"], y: [fy, "easeIn"], bx, by, radius: 0 }
+        ]),
+        new Particle([
           { x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 20, duration: 0.5 },
           { duration },
           { r: r * 64, g: g * 80, b: b * 256, radius: 50, duration: 0.5 },
           { r: r * 256, g: g * 256, b: b * 256, duration: 0.5 },
           { x: [fx, "easeIn"], y: [fy, "easeIn"], bx, by, radius: 0 }
         ], {imgName: "arrow", faceDirection: true}),
-        new Particle([
-          { x: 400, y: 1025, r: 50, g: 255, b: 225, radius: 40, duration: 0.5, alpha: 0.4 },
-          { duration },
-          { r: r * 64, g: g * 80, b: b * 256, radius: 100, duration: 0.5 },
-          { r: r * 256, g: g * 256, b: b * 256, duration: 0.5 },
-          { x: [fx, "easeIn"], y: [fy, "easeIn"], bx, by, radius: 0 }
-        ]),
       ];
     }
   },
@@ -249,7 +257,7 @@ var effects = [
   },
   {
     name: "bezier",
-    every: 3,
+    every: 60,
     particles: () => new Particle([
       {
         x: 0, y: 1000,
@@ -275,7 +283,7 @@ var effects = [
         bx: 1000, by: 500,
         g: 0,
       },
-    ]),
+    ], {imgName: "arrow", faceDirection: true}),
   },
   {
     name: "galaxy",
@@ -378,18 +386,17 @@ var effects = [
         },
         lifeSpan: 2,
       }));
-      parts.push(new Particle({
-        start: {
+      parts.push(new Particle([
+        {
           x, y: 720-radius,
           r: 255, g: Math.random() * 160,
           radius,
         },
-        end: {
+        {
           x: (x-500)*0.5+500, y: Math.random()*200 + 400,
           alpha: 0,
         },
-        lifeSpan: 1,
-      }));
+      ], {imgName: "arrow", faceDirection: true}));
       return parts;
     }
   },

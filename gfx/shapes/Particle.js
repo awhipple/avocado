@@ -94,23 +94,9 @@ export default class Particle extends GameObject {
     var tran = this.transitions[this.currentTran], frameDelta = (this.timer - tran.time) / tran.duration;
     this._setState(this._generateDeltaState(frameDelta));
 
-    //Compute slope of bezier curves for faceDirection option
     var dTran = this.deltaTransitions[this.currentTran];
     if ( this.faceDirection && dTran ) {
-      var dx = dTran.x, sx = dx[0], bx = dx[5], ex = dx[0] + dx[1]
-      var dy = dTran.y, sy = dy[0], by = dy[5], ey = dy[0] + dy[1]
-
-      var tx = dx[4](frameDelta * (dx[3] - dx[2]) + dx[2]);
-      var ty = dy[4](frameDelta * (dy[3] - dy[2]) + dy[2]);
-      
-      // First derivative of Bezier to get slope
-      var rise = typeof by === "number" ? 2*ty*sy - 4*ty*by +2*ty*ey - 2*sy + 2*by : ey - sy;
-      var run = typeof bx === "number" ? 2*tx*sx - 4*tx*bx +2*tx*ex - 2*sx + 2*bx : ex - sx;
-      var slope = rise / run;
-      this.dir = Math.atan(slope);
-      if ( run <= 0 ) {
-        this.dir += Math.PI;
-      }
+      this._faceDirectionOfMotion(dTran, frameDelta);
     }
   }
 
@@ -279,6 +265,24 @@ export default class Particle extends GameObject {
         }
       });
     });
+  }
+
+  //Compute slope of bezier curves for faceDirection option
+  _faceDirectionOfMotion(dTran, frameDelta) {
+    var dx = dTran.x, sx = dx[0], bx = dx[5], ex = dx[0] + dx[1]
+    var dy = dTran.y, sy = dy[0], by = dy[5], ey = dy[0] + dy[1]
+
+    var tx = dx[4](frameDelta * (dx[3] - dx[2]) + dx[2]);
+    var ty = dy[4](frameDelta * (dy[3] - dy[2]) + dy[2]);
+    
+    // First derivative of Bezier to get slope
+    var rise = typeof by === "number" ? 2*ty*sy - 4*ty*by + 2*ty*ey - 2*sy + 2*by : ey - sy;
+    var run = typeof bx === "number" ? 2*tx*sx - 4*tx*bx +2*tx*ex - 2*sx + 2*bx : ex - sx;
+    var slope = rise / run;
+    this.dir = Math.atan(slope);
+    if ( run <= 0 ) {
+      this.dir += Math.PI;
+    }
   }
 
   static prepParticlesForDraw(particles) {
