@@ -27,6 +27,7 @@ export default class GameEngine {
 
     this.window = new GameWindow(this, options.canvasID ?? "gameCanvas", this.gameObjects.all, options);
     this.net = new AvonetClient(this);
+    this.params = this._decodeParams();
 
     this.dev = window.location.href.indexOf("localhost") !== -1;
 
@@ -372,5 +373,16 @@ export default class GameEngine {
         }
       }
     }
+  }
+
+  _decodeParams() {
+    var regex = /[?&]([^=#]+)=([^&#]*)/g,
+      url = window.location.href,
+      params = {},
+      match;
+      while(match = regex.exec(url)) {
+        params[match[1]] = match[2];
+      }
+      return params;
   }
 }

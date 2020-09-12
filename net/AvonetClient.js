@@ -15,12 +15,16 @@ export default class AvonetClient {
 
     this.socket.onopen = () => {
       this.pending.forEach(msg => {
-        this.send(msg);
+        this.socket.send(msg);
       });
       this.pending = [];
       this.socket.addEventListener('message', msg => {
         this.listeners.forEach(listener => {
-          listener(msg.data);
+          try {
+            listener(JSON.parse(msg.data));
+          } catch {
+            listener(msg.data);
+          }
         });
       });
     };
@@ -34,11 +38,38 @@ export default class AvonetClient {
     }
   }
 
-  send(msg) {
+  send(...args) {
+    var type = "broadcast", channel = this.channel ?? args[0], body = this.channel ? args[0] : args[1];
+
+    var msg = JSON.stringify({type, channel, body});
+    this._send(msg);
+  }
+
+  _send(msg) {
     if ( this.socket.readyState === this.socket.OPEN ) {
       this.socket.send(msg);
     } else {
       this.pending.push(msg);
     }
+  }
+
+  setChannel(channel) {
+    this.channel = channel;
+  }
+
+  ping() {
+    this._send(JSON.stringify({type: "ping"}));
+  }
+
+  subscribe(channel) {
+    this._send(JSON.stringify({type: "subscribe", channel}));
+  }
+  
+  unsubscribe(channel) {
+    this._send(JSON.stringify({type: "unsubscribe", channel}));
+  }
+
+  auth(name) {
+    this._send(JSON.stringify({type: "auth", name}));
   }
 }
