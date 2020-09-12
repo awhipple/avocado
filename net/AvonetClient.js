@@ -8,7 +8,7 @@ export default class AvonetClient {
 
   connect(handler) {
     var url = this.engine.prod ?
-                'wss://avonet.whipple.life:9789' :
+                'ws://avonet.whipple.life:9789' :
                 'ws://localhost:9789';
 
     this.socket = new WebSocket(url);
