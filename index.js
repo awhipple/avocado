@@ -20,7 +20,7 @@ export default class Game {
     this.frameCount = 0;
 
     var div = document.createElement("div");
-    div.style = "padding:50px;position: absolute; top: 0"
+    div.style = "padding:50px;position:absolute;top:0"
     document.body.append(div);
     
     var selected = true;
@@ -47,6 +47,11 @@ export default class Game {
   }
 
   start() {
+    var listener = msg => console.log(msg);
+    this.avo.net.connect(listener);
+    // this.avo.net.listen(listener);
+    this.avo.net.send("test");
+    
     this.setEffect(0);
     this.avo.load().then(() => {
       this.avo.onUpdate(() => {
@@ -86,6 +91,9 @@ var lineSpeeds = [];
 for ( var i = 0; i < lines; i++ ) {
   lineSpeeds.push(0.12 + Math.random() * 0.06);
 }
+
+var fireSway = 0;
+
 var effects = [
   {
     name: "streams",
@@ -115,7 +123,7 @@ var effects = [
     every: 60,
     times: 1,
     particles: () => {
-      var anim = [ { x: -100, y: 500, radius: 20, g: 255, duration: 1 } ];
+      var anim = [ { x: -100, y: 500, radius: 20, duration: 1, ...rCol() } ];
       var rot = 0;
       for ( var i = 0; i < 8; i++ ) {
         rot += Math.PI*3*Math.random() + 0.3;
@@ -123,14 +131,15 @@ var effects = [
         rot -= Math.PI*3*Math.random() + 1;
         anim.push({dir: [rot, "easeBoth"], duration: 0.5});
       }
+      var destCol = rCol();
       return [
         new Particle( [
           ...anim, 
-          { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: -200, radius: 65 + Math.random() * 30, r: 128, g: 0, b: [255, "easeIn"] }
+          { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: -200, radius: 65 + Math.random() * 30, ...destCol }
         ], { imgName: "bonnie" }),
         new Particle( [
           ...anim, 
-          { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: 1200, radius: 65 + Math.random() * 30, r: 128, g: 0, b: [255, "easeIn"] }
+          { dir: [6.28, "easeBoth"], x: 1100, y: 500, by: 1200, radius: 65 + Math.random() * 30, ...destCol }
         ], { imgName: "face" }),
       ]      
     }
@@ -339,11 +348,14 @@ var effects = [
   },
   {
     name: "flames",
-    times: 3,
+    times: 10,
     particles: () => {
       var parts = [];
       var x = Math.random()*200 + 400;
-      if ( Math.random() < 0.06) {
+      var xo = Math.random()*2-1;
+      var swayX = Math.sin(fireSway);
+      fireSway += 0.007;
+      if ( Math.random() < 0.02) {
         // Smoke
         parts.push(new Particle({
           start: {
@@ -358,45 +370,56 @@ var effects = [
             alpha: 0,
           },
           lifeSpan: 4,
+          z: 1,
         }));
       }
-      if ( Math.random() < 0.3 ) {
+      if ( Math.random() < 0.02 ) {
         // Sparks
         parts.push(new Particle({
           start: {
-            x, y: 700,
+            x: 500 + xo * 40, y: 700,
             r: 255, g: Math.random() * 160,
             radius: 3,
           },
           end: {
-            x: x + Math.random() * 160 - 80, y: Math.random()*200 + 300,
+            x: x + Math.random() * 250 - 125, y: Math.random()*200 + 200,
             alpha: 0,
           },
-          lifeSpan: 1,
+          lifeSpan: 1.5,
+          z: 1,
         }));
       }
       // Fire
       var radius = Math.random()*20+20;
-      parts.push(new Particle({
-        start: {
-          x, y: 720-radius,
-          r: 255, g: Math.random() * 160,
-          radius,
-          alpha: 0.2,
-        },
-        lifeSpan: 2,
-      }));
       parts.push(new Particle([
         {
-          x, y: 720-radius,
+          x: 500 + xo * 40, y: 720-radius,
           r: 255, g: Math.random() * 160,
           radius,
         },
         {
-          x: (x-500)*0.5+500, y: Math.random()*200 + 400,
+          x: 500 + xo * 40 + swayX * 50, y: Math.random()*200 + 300,
+          bx: 500 + xo * 150 - swayX * 20, by: 600,
           alpha: 0,
         },
-      ], {imgName: "arrow", faceDirection: true}));
+      ], {z: Math.floor(Math.random() * 10)}));
+      // Blue
+      if ( Math.random() < 0.4 ) {
+        parts.push(new Particle([
+          {
+            x: 500 + xo * 10, y: 740-radius,
+            r: 128, g: Math.random() * 160, b: 255,
+            alpha: 0,
+            radius,
+            duration: 0.2,
+          },
+          {alpha: 0.06},
+          {
+            x: 500 + xo * 10, y: 500, bx: 500 + xo * 80,
+            alpha: 0,
+          }
+        ], {z: Math.floor(Math.random()*4+7)}));
+      }
       return parts;
     }
   },

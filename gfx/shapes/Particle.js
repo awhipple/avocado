@@ -2,6 +2,80 @@ import Image from "../Image.js";
 import GameObject from "../../objects/GameObject.js";
 import { shallow } from "../../engine/Tools.js";
 
+// This engine takes in a set of desired states called transitions. It then computes the 
+// gradual animation to take the object from one transition state to the next.
+// The method, _generateDeltaTransitions compiles the set of transitions into
+// its actionable form, deltaTransitions.
+
+/*
+ex. transitions (provided by user):
+[
+  {x: 100, y: 500, duration: 5},
+  {x: 200, duration: 2},
+  {x: 100, y: 100},
+]
+*/
+
+// The parameter "time" is hydrated into the above transition objects, 
+// and is computed from duration. It represents what the clock should be at in
+// seconds at the start of the transition. In this example, the first will get time: 0,
+// the 2nd will get time: 5, and the 3rd will get time: 7.
+
+// This transition array states that we want a particle to begin at (100, 500).
+// The duration, 5, means that it will take 5 seconds to transition to the next state.
+// It will take 5 seconds for the particle to slide from x:100 to x:200.
+// The next duration, 2, means that it will then take 2 seconds for the particle to
+// finish moving to (100, 100).
+
+// There is one important caveat here. You will notice that y was omitted in the
+// 2nd transition. This has special meaning to the particle engine. It means that starting
+// from transition one, the particle should move at a linear rate from y:500 to y:100
+// over the course of the total amount of time between all interim transitions.
+// In this case, this means that the particle will move from y:500 to y:100 in 7 seconds
+// starting from the beginning of its life.
+
+// deltaTransitions are an engine format for the data to facilitate the computation of
+// this complex dynamic. A delta transition can be thought of as occuring between each
+// of the above transitions. As such, for the 3 transitions above, there will be 2
+// delta transitions. One for spanning from transition 1 to 2, and one for 2 to 3.
+
+// deltaTransitions contains all necessary information for the animation other than timing.
+
+/* ex. deltaTransitions (to match the above 3 transitions):
+[
+  {
+    x: [100, 100,  0, 1, d=>d, undefined],
+    y: [500, -400, 0, 2, d=>d, undefined],
+  },
+  {
+    x: [200, -100, 1, 2, d=>d, undefined],
+    y: [500, -400, 0, 2, d=>d, undefined],
+  }
+]
+*/
+
+// The schema  of each array above is as follows.
+// [initial, delta, startIndex, endIndex, transitionFunction, bezier]
+//    initial: The value the parameter takes at the beginning of the transition.
+//    delta: The amount the parameter will change over the course of the transition.
+//    startIndex: The index of the transition that defines the start state of the parameter.
+//    endIndex: The index of the transition that defines the end state of the parameter.
+//    transitionFunction: Defines the transition method. Standard is d=>d and
+//                        just adjusts the parameter in a linear fashion.
+//    bezier: Used for x and y and defines a bezier transition point. This is for curved paths.
+
+// To define a different transition function than d=>d, provide an array for a transition
+// parameter instead of a scalar for the end state.
+// Example: Rather than {x: 300} use {x: [300, d=>Math.pow(d, 2)]} or use one of the methods
+//  as a string defined by transitionFunctions above like {x: [300, "easeIn"]}
+
+// To use a bezier curve, provide bx and or by alongside their x and y counterparts in
+// the end state transition. bx and by define the 2nd point in the bezier curve.
+// Example: If a particle is at (100, 100), providing {x: 200, y: 100} would cause the
+//  particle to slide in a linear fashion to the right. If we instead want the particle
+//  to arc upward, we can provide {x: 200, y: 100, bx: 150, by: 0}
+//  In this case the particle will trace a parabola up to y:50 due to the nature of bezier curves.
+
 export default class Particle extends GameObject {
   static drawQueue = [];
   static particleColorMap = {};
@@ -12,15 +86,15 @@ export default class Particle extends GameObject {
     dir: 0, radius: 50, alpha: 1,
   };
   static transitionFunctions = {
-    none: d => 0,
-    easeIn: d => Math.sin(d * Math.PI/2),
-    easeOut: d => 1 - Math.sin((1-d) * Math.PI/2),
-    easeBoth: d => {
-      var dist = Math.pow((0.5-Math.abs(0.5-d))/0.5, 2)*0.5;
+    none: (val = 0) => () => val,
+    easeIn: () => d => Math.sin(d * Math.PI/2),
+    easeOut: () => d => 1 - Math.sin((1-d) * Math.PI/2),
+    easeBoth: (p = 2) => d => {
+      var dist = Math.pow((0.5-Math.abs(0.5-d))/0.5, p)*0.5;
       return d < 0.5 ? dist : 1 - dist;
     },
-    volatile: d => d % 0.01 > 0.005 ? 0 : d,
-    random: d => Math.random(),
+    volatile: () => d => d % 0.01 > 0.005 ? 0 : d,
+    random: () => d => Math.random(),
   }
   
   z = 1000;
@@ -74,6 +148,8 @@ export default class Particle extends GameObject {
     this.faceDirection = options.faceDirection ?? false;
 
     this.timer = 0;
+
+    this.update();
   }
 
   update() {
@@ -206,9 +282,9 @@ export default class Particle extends GameObject {
           var nextTran = propNextSeen && this.transitions[propNextSeen];
           if ( nextTran ) {
             var lastVal = lastTran[key]?.[0] ?? lastTran[key];
-            var [nextVal, dFunc] = Array.isArray(nextTran[key]) ? nextTran[key] : [ nextTran[key], d => d];
+            var [nextVal, dFunc, ...args] = Array.isArray(nextTran[key]) ? nextTran[key] : [ nextTran[key], d => d];
             if ( typeof dFunc === "string" ) {
-              dFunc = Particle.transitionFunctions[dFunc] ?? (d => d);
+              dFunc = Particle.transitionFunctions[dFunc](...args) ?? (d => d);
             }
             var deltaChange = nextVal - lastVal;
             var totDur = nextTran.time - lastTran.time;

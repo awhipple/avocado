@@ -1,4 +1,5 @@
 import GameWindow from '../gfx/GameWindow.js';
+import AvonetClient from '../net/AvonetClient.js';
 import ImageLibrary from '../gfx/ImageLibrary.js';
 import { KeyNames, MouseButtonNames } from '../input/Enums.js';
 import { Coord } from './GameMath.js';
@@ -25,6 +26,7 @@ export default class GameEngine {
     this.mobileStretch = options.mobileStretch ?? true;
 
     this.window = new GameWindow(this, options.canvasID ?? "gameCanvas", this.gameObjects.all, options);
+    this.net = new AvonetClient(this);
 
     this.dev = window.location.href.indexOf("localhost") !== -1;
 
