@@ -42,7 +42,7 @@ export default class Game {
     });
 
     // Debug
-    // window.avo = this.avo;
+    window.avo = this.avo;
     // this.engine.setProd();
   }
 

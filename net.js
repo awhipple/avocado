@@ -36,7 +36,8 @@ export default class Game {
     };
 
     this.avo.net.connect(listener);
-    this.avo.net.auth(this.avo.params.name || "anon");
+    this.avo.net.ping();
+    this.avo.net.auth(this.avo.params.name || "anonymous");
     this.avo.net.subscribe('netExample');
 
     var waitForSend = 0;
