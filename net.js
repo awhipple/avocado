@@ -31,12 +31,12 @@ export default class Game {
         this.avo.register(this.names[msg.from].text);
       }
       var { text } = this.names[msg.from];
+      console.log(msg);
       text.x = msg.body.x;
       text.y = msg.body.y;
     };
 
     this.avo.net.connect(listener);
-    this.avo.net.ping();
     this.avo.net.auth(this.avo.params.name || "anonymous");
     this.avo.net.subscribe('netExample');
 
