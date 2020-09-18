@@ -1,6 +1,6 @@
-import Particle from "./node_modules/avocado2d/gfx/shapes/Particle.js";
-import Avocado from "./node_modules/avocado2d/engine/GameEngine.js"
-import GameObject from "./node_modules/avocado2d/objects/GameObject.js";
+import Particle from "./gfx/shapes/Particle.js";
+import Avocado from "./engine/GameEngine.js"
+import GameObject from "./objects/GameObject.js";
 
 window.onload = function() {
   (new Game()).start();
