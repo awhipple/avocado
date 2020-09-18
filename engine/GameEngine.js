@@ -8,6 +8,7 @@ import FullscreenSplash from '../objects/FullScreenSplash.js';
 import AudioLibrary from './AudioLibrary.js';
 import FlashText from '../gfx/FlashText.js';
 import Particle from '../gfx/shapes/Particle.js';
+import Prompt from '../gfx/ui/window/Prompt.js';
 
 export default class GameEngine {
   images = new ImageLibrary();
@@ -338,6 +339,10 @@ export default class GameEngine {
         this.nextTick = (new Date()).getTime();
       }
     });
+  }
+
+  prompt(prompt) {
+    this.register(new Prompt(this, prompt));
   }
 
   _keyEvent(event) {

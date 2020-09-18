@@ -97,7 +97,7 @@ export default class Particle extends GameObject {
     random: () => d => Math.random(),
   }
   
-  z = 1000;
+  z = 30;
 
   // This stuff got a little funky due to maintaining backwards compatibility.
   // Intended usage is new Particle([ <transitions ], { <options> })

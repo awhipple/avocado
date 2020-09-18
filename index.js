@@ -47,12 +47,7 @@ export default class Game {
   }
 
   start() {
-    var listener = msg => console.log(msg);
-    this.avo.net.connect(listener);
-    this.avo.net.auth("aaron");
-    this.avo.net.ping();
-    this.avo.net.subscribe('testChannel');
-    this.avo.net.send('testChannel', {a: 1});
+    // this.avo.prompt("Enter name:");
     
     this.setEffect(0);
     this.avo.load().then(() => {

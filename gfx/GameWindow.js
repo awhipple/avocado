@@ -27,9 +27,12 @@ export default class GameWindow {
     if ( this.engine.mobile ) {
       document.body.style = "overscroll-behavior: none; touch-action: manipulation";
     }
-    this.canvas.style = engine.mobile && engine.mobileStretch ? 
+
+    var universalStyles = options.border ? "border:" + options.border + ";" : "";
+
+    this.canvas.style = universalStyles + (engine.mobile && engine.mobileStretch ? 
       "width: 100%; height: 100%;" :
-      this.ratioStyle + "padding-left: 0;margin-left: auto;margin-right: auto;display: block;";
+      this.ratioStyle + "padding-left: 0;margin-left: auto;margin-right: auto;display: block;");
       
     this.width = this.canvas.width;
     this.height = this.canvas.height;
