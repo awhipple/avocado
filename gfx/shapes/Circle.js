@@ -1,4 +1,5 @@
 import { Coord } from "../../engine/GameMath.js";
+import Color from "../Color.js";
 
 export default class Circle {
   static _singleton = new Circle(new Coord(0, 0), 0);
@@ -8,7 +9,8 @@ export default class Circle {
     this.pos = pos;
     this.radius = radius;
 
-    this.color = options.color ?? "#000";
+    this.color = options.color instanceof Color ? options.color.hex : options.color ?? "#000";
+    console.log(this.color);
     this.alpha = options.alpha ?? 1;
     this.border = options.border ?? true;
   }
