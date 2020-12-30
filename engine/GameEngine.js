@@ -129,6 +129,7 @@ export default class GameEngine {
         addNamedObject("particle");
       }
     }
+    return object;
   }
 
   unregister(object) {

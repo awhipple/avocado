@@ -118,17 +118,25 @@ export default class Image {
     return flippedImage;
   }
 
-  cut(width) {
+  /**
+   * Cuts an image into an array of smaller images.
+   * @param {*} width The width of each smaller image.
+   * @param {*} height The height of each smaller image. Will use base image height if not provided
+   */
+  cut(width, height) {
     var i = 0;
-    for ( var x = 0; x < this.width; x += width) {
-      var newCan = document.createElement("canvas");
-      newCan = document.createElement("canvas");
-      newCan.width = width;
-      newCan.height = this.height;
-      var newCtx = newCan.getContext("2d");
-      newCtx.drawImage(this.img, x, 0, width, this.height, 0, 0, width, this.height);
-      this[i] = new Image(newCan);
-      i++;
+    height = height || this.height;
+    for ( var y = 0; y < this.height; y+= height) {
+      for ( var x = 0; x < this.width; x += width) {
+        var newCan = document.createElement("canvas");
+        newCan = document.createElement("canvas");
+        newCan.width = width;
+        newCan.height = height;
+        var newCtx = newCan.getContext("2d");
+        newCtx.drawImage(this.img, x, y, width, height, 0, 0, width, height);
+        this[i] = new Image(newCan);
+        i++;
+      }
     }
     this.length = i;
   }
@@ -174,3 +182,15 @@ export default class Image {
   }
 
 }
+
+var TestImage = new OffscreenCanvas(100, 100);
+var TestImageCtx = TestImage.getContext("2d");
+TestImageCtx.fillStyle = "#f0F";
+TestImageCtx.fillRect(0, 0, 100, 100);
+TestImageCtx.lineWidth = 5;
+TestImageCtx.moveTo(0, 0);
+TestImageCtx.lineTo(100, 100);
+TestImageCtx.moveTo(0, 100);
+TestImageCtx.lineTo(100, 0);
+TestImageCtx.stroke();
+export {TestImage};

@@ -8,6 +8,11 @@ export default class ImageLibrary {
     this.path = path;
   }
 
+  /**
+   * Retrieves an image from the image library by name.
+   * @param {String} name 
+   * @returns {Image}
+   */
   get(name) {
     name = name.toLowerCase();
     return this.images[name] || this._loadImage(name);

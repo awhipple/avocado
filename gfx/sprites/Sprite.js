@@ -1,13 +1,15 @@
+import {TestImage} from "../Image.js";
+
 export default class Sprite {
   _rad = 0;
   alpha = 1;
   rotated = false;
 
-  constructor(img, x, y, scale = 1) {
-    this.img = img;
-    this.x = x || 0;
-    this.y = y || 0;
-    this.scale = scale || 1;
+  constructor() {
+    this.img = TestImage;
+    this.x = 100;
+    this.y = 100;
+    this.scale = 1;
   }
 
   get rad() {
