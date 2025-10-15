@@ -21,10 +21,15 @@ var avo = new Avocado( {
 } );
 ```
 
+Import the Circle object
+````javascript
+import Circle from "./node_modules/avocado2d/gfx/shapes/Circle.js"
+````
+
 Instantiate a game object with your init code.
 
 ````javascript
-var circle = new Circle({x: 500, y: 500}, 30);
+var circle = new Circle({x: 500, y: 500}, 30, {color: "#00f"});
 avo.register(circle);
 ````
 
